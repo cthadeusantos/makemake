@@ -3,6 +3,7 @@
 .idea
 migrations
 __pycache__
+staticfiles
 
 #Files
 *.sqlite3
