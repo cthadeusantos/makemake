@@ -1,9 +1,13 @@
 # Directories
 .env
 .idea
+.vscode
+.DS_Store
 migrations
 __pycache__
+media
 
 #Files
 *.sqlite3
 *pyc
+.python-version

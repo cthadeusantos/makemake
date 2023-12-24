@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <span><a href="{% url 'home-projects' %}">[PROJECTS]</a></span>
+    <H1>Project details</H1>
+    <p>{{ project.id }}</p>
+    <p>{{ project.name }}</p>
+    <p>{{ project.description }}</p>
+    <p>{{ project.created_at }}</p>
+    <p>{{ project.updated_at }}</p>
+    <a href="{% url 'home-documents' project.id %}"><button class="btn btn-outline-warning mr-3">DOCUMENTS</button></a>
+{% endblock %}

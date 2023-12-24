@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <span><a href="{% url 'home' %}">[HOME]</a></span>
+    <H1>Você está em documents</H1>
+    Project number: {{ project_number }}
+    <br>
+    <span><a href="{% url 'new-document' project_number %}">[NEW]</a></span>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.id }}<a href="{% url 'details-document' item.id  %}">{{ item.summary }}</a>  <a href="{% url 'edit-document' pk=item.id project_number=project_number %}">E</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

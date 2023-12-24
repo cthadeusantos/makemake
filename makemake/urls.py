@@ -15,10 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 import makemake.core.views
+import makemake.documents.views
 
 urlpatterns = [
-    path('', makemake.core.views.home),
+    path('', makemake.core.views.home, name='home'),
+    path('documents/', include('makemake.documents.urls')),
+    path('projects/', include('makemake.projects.urls')),
+    #path('documents/', makemake.documents.views.home),
+    #path('documents/new/', makemake.documents.views.new),
     path('admin/', admin.site.urls),
 ]

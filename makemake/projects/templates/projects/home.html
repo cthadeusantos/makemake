@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    
+    <H1>Você está em Projects</H1>
+    <span><a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a></span>
+    <span><a href="{% url 'new-project' %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new project"></a></span>
+    <ul>
+        {% for item in items %}
+        <li>{{ item.id }}<a href="{% url 'details-project' item.id %}">{{ item.name }} </a>{{ item.created_at|date:'Y-m' }}  <a href="{% url 'edit-project' item.id %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a> <a href="{% url 'delete-project' item.id %}"><img src="{% static "images/trash.svg" %}" alt="trash" title="Delete"></a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+    <span><a href="{% url 'home-documents' project_number %}">[DOCUMENTS]</a></span>
+    <H1>Document details</H1>
+    <p>{{ document.id }}</p>
+    <p>{{ document.summary }}</p>
+    <p>{{ document.description }}</p>
+    <p>{{ document.created_at }}</p>
+    <p>{{ document.updated_at }}</p>
+
+    {% if versions %}
+        <a href=""><button disabled class="btn btn-outline-warning mr-3">DELETE THIS DOCUMENT</button></a>
+    {% else %}
+        <a href="{% url 'delete-document' document.id %}"><button class="btn btn-outline-danger mr-3">DELETE THIS DOCUMENT</button></a>
+    {% endif %}
+
+    <h3>Versions</h3>
+
+    <a href="{% url 'version-document' document.id %}"><button class="btn btn-outline-primary mr-3">Insert new version</button></a>
+
+    <br>
+    {% for version in versions %}
+        {{ version.version_number }}
+        {{ version.upload_url.name|cut:'remove/trailing/dirs/' }}
+        <a href="{% url 'download-version-file' version.id %}"><button class="btn btn-primary btn-sm mr-3">Download</button></a>
+        <br>
+    {% endfor %}
+
+{% endblock %}
