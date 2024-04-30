@@ -5,7 +5,7 @@ from makemake.projects.views import *
 urlpatterns = [
     path('', home, name='home-projects'),
     path('new/', new, name='new-project'),
-    path('edit/<int:pk>/', edit, name='edit-project'),
+    path('edit/<int:pk>/', edit2, name='edit-project'),
     path('delete/<int:pk>/', delete, name='delete-project'),
     path('details/<int:pk>/', details, name='details-project'),
     #path('partial', partial, name='partial'),

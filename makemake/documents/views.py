@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import ModelChoiceField
 
 from makemake.buildings.models import Building
-from makemake.documents.forms import DocumentForm, DocumentForm2, VersionForm, DocCategoryFormSet, DocBuildingFormSet
+from makemake.categories.models import Category
+from makemake.documents.forms import DocumentForm2, VersionForm
 from makemake.documents.models import Document, Version
 from makemake.projects.models import Project
 
@@ -20,56 +21,48 @@ def home(request, pk=None):
 
 def new(request, project_number=None):
     if request.method == 'POST':
-        form = DocumentForm2(request.POST, project_number=project_number)
-        category_formset = DocCategoryFormSet(request.POST)
-        #form = DocumentForm(request.POST, prefix='documents')
-        #category_formset = DocCategoryFormSet(request.POST, prefix='categories')
-        
-        # # Enabled fields
-        # form.fields['created_at'].disabled = True
-        # form.fields['updated_at'].disabled = True
+        form = DocumentForm2(request.POST, project_number=project_number, prefix='repost')
 
-        if category_formset.is_valid() and form.is_valid():
+        if form.is_valid():
+            a = form.cleaned_data['building'].id
+            b = form.cleaned_data['categories'].id
+            c = form.cleaned_data['summary']
+            d = form.cleaned_data['description']
+            e = form.cleaned_data['created_at']
+            f = form.cleaned_data['updated_at']
+            g = form.cleaned_data['doctype']
             instance_temp = Project.objects.get(id=project_number)
-            instance_building = Building.objects.get(id=context['building'])
-            instance = Document(summary=form['summary'],
-                                description=form['description'],
-                                created_at=form['created_at'],
-                                updated_at=form['updated_at'],
-                                #doctype=data['doctype'],
+            instance_building = Building.objects.get(id=a)
+            instance_category = Category.objects.get(id=b)
+            instance = Document(summary=c,
+                                description=d,
+                                created_at=e,
+                                updated_at=f,
+                                doctype=g,
                                 project=instance_temp,
                                 building=instance_building,
+                                categories=instance_category,
                                 )
-            # context = {'project_number': project_number,
-            #            'category_formset': category_formset,
-            #            'building': form.data['documents-building']}
-            form.save(instance)
-            return HttpResponseRedirect('/documents/new/' + str(project_number))
-        else:
-            context = {'form': DocumentForm(prefix='documents'),
-                       'category_formset': DocCategoryFormSet(prefix='categories'),
-                       'project_number': project_number}
-            return render(request, 'documents/new.html', context)
-    else:
-        #queryset = Building.objects.prefetch_related('buildings').filter(buildings__id=project_number)
-        #building = ModelChoiceField(queryset)
-        context = {'form': DocumentForm2(project_number=project_number, prefix='documents'),
-                   'category_formset': DocCategoryFormSet(prefix='categories'),
-                   'building_formset': DocBuildingFormSet(prefix='buildings'),
-                   'project_number': project_number}
-        return render(request, 'documents/new.html', context)
+            instance.save()
+            #return HttpResponseRedirect('/documents/new/' + str(project_number))
+    context = {'form': DocumentForm2(project_number=project_number, prefix='new'),
+                #'category_formset': DocCategoryFormSet(prefix='categories'),
+                #'building_formset': DocBuildingFormSet(prefix='buildings'),
+                'project_number': project_number}
+    return render(request, 'documents/new.html', context)
 
 
 def edit(request, pk=None, project_number=None):
     if pk:
         document = Document.objects.get(pk=pk)
         if request.method == "POST":
-            form = DocumentForm(request.POST, instance=document)
-            category_formset = DocCategoryFormSet(request.POST, prefix='categories')
-            if form.is_valid() and category_formset.is_valid():
+            form = DocumentForm2(request.POST, instance=document)
+            #category_formset = DocCategoryFormSet(request.POST, prefix='categories')
+            if form.is_valid():
                 context = {'pk': pk,
                            'project_number': project_number,
-                           'category_formset': category_formset}
+                           #'category_formset': category_formset
+                           }
                 form.update(context)
                 return HttpResponseRedirect('/documents/edit/' + str(pk))
             else:
@@ -77,8 +70,8 @@ def edit(request, pk=None, project_number=None):
         else:
             queryset = Building.objects.prefetch_related('buildings').filter(buildings__id=project_number)
             building = ModelChoiceField(queryset)
-            context = {'form': DocumentForm(instance=document, building=building),
-                       'category_formset': DocCategoryFormSet(prefix='categories'),
+            context = {'form': DocumentForm2(instance=document, building=building),
+                       #'category_formset': DocCategoryFormSet(prefix='categories'),
                        'pk': pk,
                        'project_number': project_number}
             return render(request, 'documents/edit.html', context)
@@ -103,14 +96,20 @@ def version(request, pk=None):
     if request.method == 'POST':
         form = VersionForm(request.POST, request.FILES, pk=pk)
         if form.is_valid():
-            form.save(pk)
+            a = form.cleaned_data['version_number']
+            b = form.cleaned_data['changelog']
+            c = form.cleaned_data['upload_at']
+            d = form.cleaned_data['upload_url']
+            document_instance = Document.objects.get(pk=pk)
+            version = Version(version_number=a,
+                              changelog=b,
+                              upload_at=c,
+                              upload_url=d,
+                              document=document_instance)
+            version.save()
             return HttpResponseRedirect('/documents/details/' + str(pk))
-        else:
-            context = {'form': VersionForm(pk=pk), 'pk': pk}
-            return render(request, 'documents/version.html', context)
-    else:
-        context = {'form': VersionForm(pk=pk), 'pk': pk}
-        return render(request, 'documents/version.html', context)
+    context = {'form': VersionForm(pk=pk), 'pk': pk}
+    return render(request, 'documents/version.html', context)
 
 
 def download_file(request, file_id):

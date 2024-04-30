@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectCounterSite++;
 
             // Criar um novo select com ID único
-            var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '">';
+            var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="form-select form-select-sm" >';
             for (var i = 0; i < data.options.length; i++) {
                 selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
             }
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectCounterMember++;
 
             // Criar um novo select com ID único
-            var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '">';
+            var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="form-select form-select-sm">';
             for (var i = 0; i < data.options.length; i++) {
                 selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
             }
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectCounterStakeholder++;
 
             // Criar um novo select com ID único
-            var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '">';
+            var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="form-select form-select-sm">';
             for (var i = 0; i < data.options.length; i++) {
                 selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
             }

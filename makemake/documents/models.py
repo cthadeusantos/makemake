@@ -7,6 +7,7 @@ from makemake.projects.models import Project
 from makemake.categories.models import Category
 from makemake.buildings.models import Building
 from makemake.core.custom_functions import left_pad
+from makemake.core.choices import FILE_EXTENSION_CHOICES
 
 
 class Document(models.Model):
@@ -26,7 +27,7 @@ class Document(models.Model):
                                  blank=True,
                                  null=True,
                                  )
-    #doctype = models.PositiveSmallIntegerField(null=False)
+    doctype = models.PositiveSmallIntegerField(null=False, default=None, choices=FILE_EXTENSION_CHOICES,)
     #categories = models.ManyToManyField(Category, related_name='categories')
     categories = models.ForeignKey(Category,
                                    related_name='categories',
@@ -50,8 +51,8 @@ class Version(models.Model):
 
     def directory_path(self, filename):
         project_number = self.document.project.pk
-        category = self.document.categories.get(Q(categories__project=project_number) & Q(category__isnull=True))
-        category_code = category.code
+        #category = self.document.categories.get(Q(categories__project=project_number) & Q(category__isnull=True))
+        category_code = self.document.categories.code
         building = self.document.building.pk
         project_number = left_pad(project_number)
         building_number = left_pad(building)

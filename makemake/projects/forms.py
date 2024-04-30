@@ -34,36 +34,140 @@ class ProjectBuildingForm(forms.Form):
     #     except:
 
 class ProjectForm(forms.Form):
-    name = forms.CharField(label='Project name')
+    code = forms.IntegerField(label='Code',
+                                    widget=forms.NumberInput(attrs={'name': 'code',
+                                                                    'class': 'form-control form-control-sm',     
+                                                                    'readonly': 'true',
+                                                                    }))
+    year = forms.IntegerField(widget=forms.NumberInput(attrs={'name': 'year',
+                                                              'class': 'form-control form-control-sm',
+                                                              'readonly': 'true',
+                                                              }))
+    name = forms.CharField(label='Project name', widget=forms.TextInput(attrs={'name': 'name',
+                                                               'style': 'resize:none',
+                                                               'class': 'form-control form-control-sm',
+                                                               }))
     description = forms.CharField(label='Description',
                                   widget=forms.Textarea(attrs={'name': 'description',
                                                                'rows': 3,
                                                                'cols': 100,
-                                                               'style': 'resize:none'
+                                                               'style': 'resize:none',
+                                                               'class': 'form-control form-control-sm',
                                                                }))
     created_at = forms.DateField(label='Created at',
                                  widget=forms.DateInput(attrs={'name': 'created_at',
-                                                               'type': 'date'}))
+                                                               'type': 'date',
+                                                               'class': 'form-control form-control-sm',
+                                                               'readonly': 'true',
+                                                               }))
     updated_at = forms.DateField(label='Updated at',
                                  widget=forms.DateInput(attrs={'name': 'updated_at',
-                                                               'type': 'date'}))
+                                                               'type': 'date',
+                                                               'readonly': 'true',
+                                                               'class': 'form-control form-control-sm',
+                                                               }))
+    project_manager = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm',
+                                   'name': 'project_manager'}),
+        label='Project Manager'
+    )
+    project_manager_support = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm',
+                                   'name': 'project_manager_support'}),
+        label='Project Manager Support'
+    )
+    interlocutor = forms.CharField(label='Interlocutor',
+                                    widget=forms.Textarea(attrs={'name': 'interlocutor',
+                                                            'rows': 2,
+                                                            'cols': 100,
+                                                            'style': 'resize:none',
+                                                            'class': 'form-control form-control-sm',
+                                                            }))
     site = forms.ModelChoiceField(
             queryset=Site.objects.all(),
             required=True,
-            #label='site'
+            widget=forms.Select(attrs={'class': 'form-select form-select-sm', 'readonly': 'readonly',}),
+            label='Site'
         )
 
-    def __init__(self, *args, **kwargs):
-        super(ProjectForm, self).__init__(*args, **kwargs)
-        self.fields['created_at'].initial = datetime.today
-        self.fields['created_at'].disabled = True
-        self.fields['updated_at'].initial = datetime.today
-        self.fields['updated_at'].disabled = True
 
+    def __init__(self, *args, **kwargs):
+        prefix = kwargs.pop('prefix', None)
+        instance = kwargs.pop('instance', None)
+        super(ProjectForm, self).__init__(*args, **kwargs)
+        today_is = datetime.today
+        year = datetime.now().year
+        if prefix == 'new':
+            self.fields['created_at'].initial = today_is
+            self.fields['updated_at'].initial = today_is
+            self.fields['year'].initial = year
+            query = Project.objects.filter(year=year).order_by('-code').first()
+            if query:
+                self.fields['code'].initial = Project.objects.filter(year=year).order_by('-code').first().code + 1
+            else:
+                self.fields['code'].initial = 1
+        elif prefix == 'edit':
+            # Usando a instância para obter o ID do site default
+            c_instances = [b_instance.site for b_instance in instance.buildings.all()]
+            site_ID = c_instances[0].id
+        
+            # # Usando get para obter a instância de A
+            # a_instance = Project.objects.get(pk=pk)
+
+            # # Obtendo todos os elementos da tabela B relacionados com a instância de A
+            # b_instances = a_instance.buildings.all()
+
+            # # Obtendo todos os elementos da tabela B relacionados com a instância de A
+            # d_instances = a_instance.members.all()
+
+            # #site_pk = Site.objects.select_related('project__building').get(pk=1)
+            # site_pk = c_instances[0].id - 1
+            self.fields['code'].initial = instance.code
+            self.fields['year'].initial = instance.year
+            self.fields['name'].initial = instance.name
+            self.fields['description'].initial = instance.description
+            self.fields['created_at'].initial = instance.created_at
+            self.fields['updated_at'].initial = today_is
+            self.fields['project_manager'].initial = instance.project_manager
+            self.fields['project_manager_support'].initial = instance.project_manager_support
+            self.fields['interlocutor'].initial = instance.interlocutor
+            self.fields['site'].initial = site_ID
+            self.fields['site'].widget.attrs['disabled'] = True
+            self.fields['site'].required = 'False'
+
+class ProjectForm3(forms.ModelForm):
+    site = forms.ModelChoiceField(queryset=Site.objects.all(),
+                                  required=True,
+                                  widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
+                                  label='site'
+                                  )
+    class Meta:
+        model = Project
+        fields = ['code', 'year', 'name', 'description','created_at', 'updated_at', 'project_manager', 'project_manager_support', 'interlocutor', 'site']
+        widgets = {'code': forms.NumberInput(attrs={'name': 'code', 'class': 'form-control form-control-sm','readonly': 'true',}),
+                   'year': forms.NumberInput(attrs={'name': 'year', 'class': 'form-control form-control-sm', 'readonly': 'true',}),
+                   'name': forms.TextInput(attrs={'name': 'name', 'style': 'resize:none', 'class': 'form-control form-control-sm'}),
+                   'description': forms.Textarea(attrs={'name': 'description', 'rows': 3, 'cols': 100, 'style': 'resize:none', 'class': 'form-control form-control-sm'}),
+                   'created_at': forms.DateInput(attrs={'name': 'created_at', 'type': 'date', 'class': 'form-control form-control-sm', 'readonly': 'true', }),
+                   'updated_at': forms.DateInput(attrs={'name': 'updated_at', 'type': 'date', 'readonly': 'true', 'class': 'form-control form-control-sm', }),
+                   'project_manager': forms.Select(attrs={'class': 'form-select form-select-sm', 'name': 'project_manager'}),
+                   'project_manager_support': forms.Select(attrs={'class': 'form-select form-select-sm', 'name': 'project_manager_support'}),
+                   'interlocutor': forms.Textarea(attrs={'name': 'interlocutor', 'rows': 2, 'cols': 100, 'style': 'resize:none', 'class': 'form-control form-control-sm',}),
+                   }
+
+    def __init__(self, *args, **kwargs):
+        self.declared_fields['site'] = 1
+        
+
+  
 class ProjectForm2(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['name', 'description','created_at', 'updated_at']
+        fields = ['code', 'year', 'name', 'description','created_at', 'updated_at', 'project_manager', 'project_manager_support', 'interlocutor']
         widgets = {'description': forms.Textarea(attrs={'name': 'description',
                                                         'rows': 3,
                                                         'cols': 100,

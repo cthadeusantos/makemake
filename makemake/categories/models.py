@@ -3,7 +3,7 @@ from datetime import date
 
 
 class Category(models.Model):
-    code = models.CharField(max_length=3, default='',)
+    code = models.CharField(max_length=3, default='', unique=True)
     name = models.CharField(max_length=50, default='',)
     description = models.TextField(default='', blank=True)
     #created_at = models.DateField(default=date.today, editable=True)

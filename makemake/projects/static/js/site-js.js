@@ -1,6 +1,108 @@
+var selectCounterSite = 0;  // Inicializa um contador para IDs únicos
+var selectCounterMember = 0;  // Inicializa um contador para IDs únicos
+var selectCounterStakeholder = 0;  // Inicializa um contador para IDs únicos
+
+
+async function fetchData(url) {
+    return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                resolve(JSON.parse(xhr.responseText));
+            } else {
+                reject('Erro ao obter dados');
+            }
+        };
+
+        xhr.onerror = function () {
+            reject('Erro ao fazer a requisição');
+        };
+
+        xhr.send();
+    });
+}
+
+
+async function addSelectMember() {
+    try {
+        var data = await fetchData("/projects/get-select-users/");
+        //var selectCounterSite = 0;
+
+        // Incrementa o contador para criar IDs únicos
+        selectCounterMember++;
+
+        // Criar um novo select com ID único
+        var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="form-select form-select-sm">';
+        for (var i = 0; i < data.options.length; i++) {
+            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
+        }
+        selectHtml += '</select></p>';
+
+        // Adicionar ao contêiner
+        document.getElementById('select-container-member').insertAdjacentHTML('beforeend', selectHtml);
+
+        // Desabilita botão submit
+        var sendFormButton = document.getElementById('send-form');
+        sendFormButton.disabled = false;
+    } catch (error) {
+        console.log('Erro ao obter opções do select', error);
+    }
+}
+
+async function addSelectStakeholder() {
+    try {
+        var data = await fetchData("/projects/get-select-users/");
+        //var selectCounterSite = 0;
+
+        // Incrementa o contador para criar IDs únicos
+        selectCounterStakeholder++;
+
+        // Criar um novo select com ID único
+        var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="form-select form-select-sm">';
+        for (var i = 0; i < data.options.length; i++) {
+            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
+        }
+        selectHtml += '</select></p>';
+
+        // Adicionar ao contêiner
+        document.getElementById('select-container-stakeholder').insertAdjacentHTML('beforeend', selectHtml);
+
+        // Desabilita botão submit
+        var sendFormButton = document.getElementById('send-form');
+        sendFormButton.disabled = false;
+    } catch (error) {
+        console.log('Erro ao obter opções do select', error);
+    }
+}
+
 // Função para adicionar novo formset
 function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, formsetNum, type) {
     e.preventDefault();
+
+    // Verificar se formsetContainer[0] não contém elementos úteis
+    if (formsetContainer[0].childElementCount === 0) {
+        // Faça alguma coisa aqui, como retornar ou lançar um erro
+        switch (type) {
+            case 'building':
+                
+                break;
+            case 'member':
+                // Chame a função quando o DOM estiver carregado
+                addSelectMember();
+                break;
+            case 'stakeholder':
+                addSelectStakeholder();
+                break;
+            default:
+                break;
+        }
+        return;
+    }
+
+    //Se formsetContainer[0] contém elementos úteis
     let newForm = formsetContainer[0].cloneNode(true),
         formRegex = RegExp(`form-(\\d){1}-`, 'g');
     formsetNum++;

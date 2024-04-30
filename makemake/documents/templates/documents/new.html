@@ -3,7 +3,7 @@
 
 <span><a href="{% url 'home-documents'  project_number %}">[DOCUMENTS]</a></span>
 <h1>New DOCUMENT FORM</h1>
-<form action="." method="post">
+<form id="DocumentForm" action="." method="post">
     {% csrf_token %}
 
     <input hidden type="text" id="project_number" name="project_number" value="{{project_number}}">
@@ -28,14 +28,20 @@
         {{ form.updated_at }}
     </p>
     <p>
+        <label for="{{ form.doctype.id_for_label }}"> {{ form.doctype.label }}</label>
+        {{ form.doctype.errors}}
+        {{ form.doctype }}
+    </p>
+    <p>
         <label for="{{ form.building.id_for_label }}"> {{ form.building.label }}</label>
         {{ form.building.errors}}
         {{ form.building }}
     </p>
     <p>
-        {{category_formset}}
+        <label for="{{ form.categories.id_for_label }}"> {{ form.categories.label }}</label>
+        {{ form.categories.errors}}
+        {{ form.categories }}
     </p>
-
     <input type="submit" value="Send!"/>
 </form>
 {% endblock %}

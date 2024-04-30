@@ -18,8 +18,8 @@
     <span><a href="{% url 'home-projects' %}">[PROJECTS]</a></span>
     <h1>New project FORM</h1>
 
-
-    <form method="post" id="project-form">
+<div class="container-fluid">
+    <form class="form-horizontal" role="form" method="post" id="project-form">
         {% csrf_token %}
         {{ project_form.as_p }}
 
@@ -71,6 +71,8 @@
 
         <input id="send-form" type="submit" value="Submit" class="btn btn-primary" disabled>
     </form>
+
+</div> <!-- FLUID -->
 
     <!-- Script Ajax para adicionar selects -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

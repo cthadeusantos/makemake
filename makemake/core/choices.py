@@ -29,21 +29,21 @@ PROJECT_STATUS_CHOICES = \
 FILE_EXTENSION_CHOICES = \
     (
         (None, '---'),
-        (1, 'DWG'),     # Autocad file
-        (2, 'DXF'),     # Autocad file
-        (3, 'PDF'),     # Portable document format file
-        (4, 'DOCX'),    # WORD file
-        (5, 'DOC'),     # WORD file
-        (6, 'XLSX'),    # EXCEL file
-        (7, 'XLS'),     # EXCEL file
-        (8, 'TXT'),     # Text file
-        (9, 'ODT'),     # LIBREOFFICE CALC file
-        (10, 'ODS'),    # LIBREOFFICE file
-        (11, 'PPT'),    # Powerpoint file
-        (12, 'PPTX'),   # Powerpoint file
-        (13, 'PNG'),    # Portable Network Graphic, a type of raster image file
-        (14, 'JPG'),    # Joint Photographic Experts Group (JPEG) file
-        (15, 'JPEG'),   # Joint Photographic Experts Group (JPEG) file
+        (1, 'Autocad - DWG'),     # Autocad file
+        (2, 'Autocad - DXF'),     # Autocad file
+        (3, 'Adobe PDF'),     # Portable document format file
+        (4, 'Word - DOCX'),    # WORD file
+        (5, 'Word - DOC'),     # WORD file
+        (6, 'EXCEL - XLSX'),    # EXCEL file
+        (7, 'EXCEL - XLS'),     # EXCEL file
+        (8, 'Text - TXT'),     # Text file
+        (9, 'Libreoffice CALC - ODT'),     # LIBREOFFICE CALC file
+        (10, 'Libreoffice Write - ODS'),    # LIBREOFFICE file
+        (11, 'Powerpoint - PPTX'),   # Powerpoint file
+        (12, 'Powerpoint - PPT'),    # Powerpoint file
+        (13, 'Image PNG'),    # Portable Network Graphic, a type of raster image file
+        (14, 'Image JPG'),    # Joint Photographic Experts Group (JPEG) file
+        (15, 'Image JPEG'),   # Joint Photographic Experts Group (JPEG) file
     )
 
 CITIES_CHOICES = ((1, 'Acre'),

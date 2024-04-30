@@ -1,13 +1,43 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
     <span><a href="{% url 'home' %}">[HOME]</a></span>
-    <H1>Você está em documents</H1>
-    Project number: {{ project_number }}
+    <H1>Documents in Project number: {{ project_number }}</H1>
     <br>
-    <span><a href="{% url 'new-document' project_number %}">[NEW]</a></span>
-    <ul>
+    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+          <button type="button" class="btn btn-secondary"><a href="{% url 'home-projects' %}"><img width="30px" src="{% static "images/arrow-left-square.svg" %}" alt="home" title="Projects home"></a></button>
+          <button type="button" class="btn btn-secondary"><a href="{% url 'new-document' project_number %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new project"></a></button>
+          <button type="button" class="btn btn-secondary">3</button>
+          <button type="button" class="btn btn-secondary">4</button>
+        </div>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text" id="btnGroupAddon">@</div>
+          </div>
+          <input type="text" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
+        </div>
+    </div>
+
+    <ul class="list-group col-md-12">
         {% for item in items %}
-            <li>{{ item.id }}<a href="{% url 'details-document' item.id  %}">{{ item.summary }}</a>  <a href="{% url 'edit-document' pk=item.id project_number=project_number %}">E</a></li>
+        {% if forloop.counter|divisibleby:"2" %}
+            <li class="list-group-item list-group-item-secondary">
+              <div>
+                <a href="{% url 'details-document' item.id  %}">{{ item.id }} {{ item.summary }} {{ item.categories }} {{ item.created_at|date:'Y-m-d' }}  </a>
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'edit-document' pk=item.id project_number=project_number %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>
+              </div>
+            </li>
+        {% else %}
+            <li class="list-group-item list-group-item-dark">
+              <div>
+                <a href="{% url 'details-document' item.id  %}">{{ item.id }} {{ item.summary }} {{ item.categories }} {{ item.created_at|date:'Y-m-d' }}  </a> 
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'edit-document' pk=item.id project_number=project_number %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>
+              </div>
+            </li>
+        {% endif %}
         {% endfor %}
     </ul>
+
 {% endblock %}
