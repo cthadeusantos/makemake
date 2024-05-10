@@ -13,8 +13,8 @@ from makemake.core.choices import FILE_EXTENSION_CHOICES
 class Document(models.Model):
     summary = models.TextField(default='', max_length=100)
     description = models.TextField(default='')
-    created_at = models.DateField(default=date.today, editable=True)
-    updated_at = models.DateField(default=date.today, editable=True)
+    created_at = models.DateField(default=date.today)
+    updated_at = models.DateField(default=date.today)
     project = models.ForeignKey(Project,
                                 related_name='project',
                                 on_delete=models.PROTECT,
@@ -50,16 +50,16 @@ class Version(models.Model):
         )
 
     def directory_path(self, filename):
-        project_number = self.document.project.pk
-        #category = self.document.categories.get(Q(categories__project=project_number) & Q(category__isnull=True))
+        numproject = self.document.project.pk
+        #category = self.document.categories.get(Q(categories__project=numproject) & Q(category__isnull=True))
         category_code = self.document.categories.code
-        building = self.document.building.pk
-        project_number = left_pad(project_number)
+        building = self.document.building.number
+        numproject = left_pad(numproject)
         building_number = left_pad(building)
         #path = '{0}/{1}/{2}'.format(
         path = '{0}/{1}/{2}/{3}'.format(
             building_number,
-            project_number,
+            numproject,
             category_code,
             filename
         )

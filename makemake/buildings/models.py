@@ -23,8 +23,8 @@ class Building(models.Model):
                                               blank=False,
                                               )
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=False, blank=False, default=None)
-    created_at = models.DateField(default=date.today, editable=True)
-    updated_at = models.DateField(default=date.today, editable=True)
+    created_at = models.DateField(default=date.today)
+    updated_at = models.DateField(default=date.today)
     objects = models.Manager()  # The default manager
 
     def __str__(self):

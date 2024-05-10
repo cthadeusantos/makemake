@@ -1,32 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 <span><a href="{% url 'details-document' pk %}">[DETAILS]</a></span>
 
 <h1>New version FORM</h1>
 <form action="." method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <p>
-        <label for="{{ form.version_number.id_for_label }}"> {{ form.version_number.label }}</label>
-        {{ form.version_number.errors}}
-        {{ form.version_number }}
-    </p>
-    <p>
-        <label for="{{ form.changelog.id_for_label }}"> {{ form.changelog.label }}</label>
-        {{ form.changelog.errors}}
-        {{ form.changelog }}
-    </p>
-    <p>
-        <label for="{{ form.upload_at.id_for_label }}"> {{ form.upload_at.label }}</label>
-        {{ form.upload_at.errors}}
-        {{ form.upload_at }}
-    </p>
-    <p>
-        <label for="{{ form.upload_url.id_for_label }}"> {{ form.upload_url.label }}</label>
-        {{ form.upload_url.errors}}
-        {{ form.upload_url }}
-    </p>
-    <button class="btn btn-primary btn-sm mr-3">UPLOAD</button>
-
+    {{ form.as_p }}
+    <button class="btn-sm btn-secondary"><img src="{% static "images/upload.svg" %}" alt="upload" title="Upload"></button>
 </form>
 
 {% endblock %}

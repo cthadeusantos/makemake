@@ -11,13 +11,25 @@
           <button type="button" class="btn btn-secondary">3</button>
           <button type="button" class="btn btn-secondary">4</button>
         </div>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <div class="input-group-text" id="btnGroupAddon">@</div>
-          </div>
-          <input type="text" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
-        </div>
-    </div>
+
+        <form method="get" action="{% url 'search-projects' %}">
+
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text" id="btnGroupAddon">@</div>
+              </div>
+
+              <input type="text"  id="search" name="search"  class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon" value="{{ search_query }}">
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+              </div>
+
+            </div>
+        </form> 
+
+      </div>
+
+
     <ul class="list-group col-md-12">
         {% for item in items %}
         {% if forloop.counter|divisibleby:"2" %}

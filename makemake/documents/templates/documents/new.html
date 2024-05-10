@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<span><a href="{% url 'home-documents'  project_number %}">[DOCUMENTS]</a></span>
+<span><a href="{% url 'home-documents'  numproject %}">[DOCUMENTS]</a></span>
 <h1>New DOCUMENT FORM</h1>
 <form id="DocumentForm" action="." method="post">
     {% csrf_token %}
 
-    <input hidden type="text" id="project_number" name="project_number" value="{{project_number}}">
+    <input hidden type="text" id="numproject" name="numproject" value="{{numproject}}">
     <p>
         <label for="{{ form.summary.id_for_label }}"> {{ form.summary.label }}</label>
         {{ form.summary.errors}}

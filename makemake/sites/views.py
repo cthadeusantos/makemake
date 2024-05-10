@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 
 from makemake.sites.models import Site
 from makemake.sites.forms import SiteForm
@@ -7,6 +8,7 @@ from makemake.sites.forms import SiteForm
 from django.db import IntegrityError
 from django.contrib import messages
 
+@login_required
 def delete(request, pk):
     project = Site.objects.get(pk=pk)
     try:
@@ -17,11 +19,12 @@ def delete(request, pk):
         messages.info(request, message)
     return home(request)
     
-
+@login_required
 def home(request):
     items = Site.objects.all()
     return render(request, 'sites/home.html', {'items': items})
 
+@login_required
 def new(request):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -49,6 +52,7 @@ def new(request):
     context = {'form': form}
     return render(request, 'sites/new_or_edit.html', context)
 
+@login_required
 def edit(request, pk=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)

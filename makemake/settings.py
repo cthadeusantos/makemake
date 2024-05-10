@@ -139,3 +139,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = str(BASE_DIR / 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django_project/settings.py
+LOGIN_REDIRECT_URL = "login/"  # new
+
+# The age of session cookies, in seconds
+SESSION_COOKIE_AGE=28800 # 8 hours
+
+# determines whether session cookies persist even after the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True

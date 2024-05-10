@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
 
 from makemake.categories.models import Category
 from makemake.categories.forms import CategoryForm
@@ -7,6 +8,7 @@ from makemake.categories.forms import CategoryForm
 from django.db import IntegrityError
 from django.contrib import messages
 
+@login_required
 def delete(request, pk):
     project = Category.objects.get(pk=pk)
     try:
@@ -17,11 +19,12 @@ def delete(request, pk):
         messages.info(request, message)
     return home(request)
     
-
+@login_required
 def home(request):
     items = Category.objects.all()
     return render(request, 'categories/home.html', {'items': items})
 
+@login_required
 def new(request):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -51,6 +54,7 @@ def new(request):
     context = {'form': form}
     return render(request, 'categories/new_or_edit.html', context)
 
+@login_required
 def edit(request, pk=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
