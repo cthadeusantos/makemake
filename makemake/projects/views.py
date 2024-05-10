@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 
@@ -84,6 +85,7 @@ def search(request):
 
 
 def home(request):
+    items = Project.objects.all().order_by('-year','-code')
     items = Project.objects.all().order_by('-year','-code')
     return render(request, 'projects/home.html', {'items': items})
 
