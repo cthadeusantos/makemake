@@ -30,13 +30,13 @@ def new(request):
         if form.is_valid():
             a = form.cleaned_data['name']
             b = form.cleaned_data['number']
-            c = form.cleaned_data['status']
-            d = form.cleaned_data['created_at']
-            e = form.cleaned_data['updated_at']
+            c = form.cleaned_data['site']
+            d = form.cleaned_data['status']
+            e = form.cleaned_data['created_at']
+            f = form.cleaned_data['updated_at']
 
             # Logica para gravar instância principal
-            b2 = Building(name=a, number=b, status=c, created_at=d, updated_at=e, )
-            b2.save()
+            b2 = Building(name=a, number=b, site=c, status=d, created_at=e, updated_at=f, )
 
             try:
                 b2.save()
@@ -62,13 +62,16 @@ def edit(request, pk=None):
         if form.is_valid():
             a = form.cleaned_data['name']
             b = form.cleaned_data['number']
-            c = form.cleaned_data['status']
-            d = form.cleaned_data['created_at']
-            e = form.cleaned_data['updated_at']
+            c = form.cleaned_data['site']
+            d = form.cleaned_data['status']
+            e = form.cleaned_data['created_at']
+            f = form.cleaned_data['updated_at']
 
             # Logica para gravar instância principal
             b2 = Building.objects.filter(pk=pk)
-            b2.update(name=a, status=c, updated_at=e, )
+            b2.update(name=a, status=d, updated_at=f, )
+            items = Building.objects.all().order_by('number')
+            return render(request, 'buildings/home.html', {'items': items})
             # # Logica para gravar instância principal
             # try:
             #     b2.save()

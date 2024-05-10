@@ -53,7 +53,7 @@ class Version(models.Model):
         project_number = self.document.project.pk
         #category = self.document.categories.get(Q(categories__project=project_number) & Q(category__isnull=True))
         category_code = self.document.categories.code
-        building = self.document.building.pk
+        building = self.document.building.number
         project_number = left_pad(project_number)
         building_number = left_pad(building)
         #path = '{0}/{1}/{2}'.format(

@@ -16,11 +16,16 @@
         <form class="form-horizontal" role="form" method="post" id="project-form">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input id="send-form" type="submit" value="Submit" class="btn btn-primary">
+                    <input id="send-form" type="submit" value="Submit" class="btn btn-primary" onclick="removeDisabled()">
                 </form>
             
     </div> <!-- FLUID -->
-
+    
+    <script>
+    function removeDisabled() {
+        document.getElementById("id_site").removeAttribute("disabled");
+    }
+    </script>
 {% endblock %}
      
      

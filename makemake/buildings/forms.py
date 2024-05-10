@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import formset_factory, inlineformset_factory
 from makemake.buildings.models import Building
+from makemake.sites.models import Site
+
 from makemake.projects.models import Project
 from django.forms import ChoiceField
 
@@ -28,6 +30,12 @@ class BuildingForm(forms.Form):
                                                                 'class': 'form-control form-control-sm',
                                                                 }))
     #status = forms.IntegerField()
+    site = forms.ModelChoiceField(
+        queryset=Site.objects.all(),
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select form-select-sm', 'readonly': 'readonly',}),
+        label='Site'
+    )
     status = ChoiceField(choices=BUILDING_STATUS_CHOICES, required=True, label="Status", widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
     created_at = forms.DateField(label='Created date',
                                  widget=forms.DateInput(attrs={'name': 'created_at',
@@ -54,13 +62,10 @@ class BuildingForm(forms.Form):
             self.fields['name'].initial = instance.name
             self.fields['number'].initial = instance.number
             self.fields['status'].initial = instance.status
+            self.fields['site'].initial = instance.site
             self.fields['created_at'].initial = instance.created_at
             self.fields['updated_at'].initial = today_is
 
             self.fields['number'].widget.attrs['readonly'] = True
-        else:
-            self.fields['name'].initial = self.name
-            self.fields['number'].initial = self.number
-            self.fields['status'].initial = self.status
-            self.fields['created_at'].initial = self.created_at
-            self.fields['updated_at'].initial = self.updated_at
+            self.fields['site'].widget.attrs['disabled'] = True
+            
