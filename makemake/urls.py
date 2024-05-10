@@ -25,6 +25,7 @@ urlpatterns = [
     path('projects/', include('makemake.projects.urls')),
     path('categories/', include('makemake.categories.urls')),
     path('sites/', include('makemake.sites.urls')),
+    path('buildings/', include('makemake.buildings.urls')),
     #path('documents/', makemake.documents.views.home),
     #path('documents/new/', makemake.documents.views.new),
     path('admin/', admin.site.urls),

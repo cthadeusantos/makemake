@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    
+    <H1>Buildings</H1>
+    <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+          <button type="button" class="btn btn-secondary"><a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a></button>
+          <button type="button" class="btn btn-secondary"><a href="{% url 'new-buildings' %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new project"></a></button>
+          <button type="button" class="btn btn-secondary">3</button>
+          <button type="button" class="btn btn-secondary">4</button>
+        </div>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text" id="btnGroupAddon">@</div>
+          </div>
+          <input type="text" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
+        </div>
+    </div>
+
+    <ul class="list-group col-md-12">
+        {% for item in items %}
+        {% if forloop.counter|divisibleby:"2" %}
+            <li class="list-group-item list-group-item-secondary d-flex justify-content-between align-items-center">
+              <div>
+                <a href="{% url 'details-project' item.id %}" class="text-decoration-none">{{ item.number }} </a>
+              </div>
+              <div>
+                <a href="{% url 'details-project' item.id %}" class="text-decoration-none"> {{ item.name }} </a>
+              </div>
+              <div>
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'edit-building' pk=item.id %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'delete-building' pk=item.id %}"><img src="{% static "images/trash.svg" %}" alt="trash" title="Delete"></a></button>
+              </div>
+            </li>
+        {% else %}
+            <li class="list-group-item list-group-item-dark d-flex justify-content-between align-items-center">
+              <div>
+                <a href="{% url 'details-project' item.id %}" class="text-decoration-none">{{ item.number }} </a>
+              </div>
+              <div>
+                <a href="{% url 'details-project' item.id %}" class="text-decoration-none"> {{ item.name }} </a>
+              </div>
+              <div>
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'edit-building' pk=item.id %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>
+                <button type="button" class="btn-sm btn-secondary"><a href="{% url 'delete-building' pk=item.id %}"><img src="{% static "images/trash.svg" %}" alt="trash" title="Delete"></a></button>
+              </div>
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+{% endblock %}
