@@ -18,6 +18,32 @@ from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, s
 def void(request):
     return HttpResponseRedirect('')
 
+def search(request):
+    # Expressão regular
+    # String de exemplo
+    #string = "   123   /   456  "
+
+    regex = r"^\s*(\d+)\s*\/\s*(\d+)\s*$"
+
+    # Texto de consulta enviado através do formulário
+    input_text = request.GET.get('search', None)
+
+    if input_text == '' or input_text is None:
+        items = Project.objects.all()
+        return render(request, 'projects/home.html', {'items': items})
+
+    # Verifica se a string corresponde ao padrão
+    match = re.match(regex, input_text)
+
+    if match:
+        x = int(match.group(1))  # Captura o valor de X
+        y = int(match.group(2))  # Captura o valor de Y
+        # Use Q objects para filtrar seu modelo
+        items = Project.objects.filter(Q(code=x) & Q(year=y))
+    else:
+        items = Project.objects.filter(Q(name__icontains=input_text))
+    return render(request, 'projects/home.html', {'items': items})
+
 def home(request):
     items = Project.objects.all()
     return render(request, 'projects/home.html', {'items': items})
