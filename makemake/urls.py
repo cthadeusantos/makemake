@@ -20,7 +20,8 @@ import makemake.core.views
 import makemake.documents.views
 
 urlpatterns = [
-    path('', makemake.core.views.home, name='home'),
+    path('', makemake.core.views.login1, name='login'),
+    path('home/', makemake.core.views.home, name='home'),
     path('documents/', include('makemake.documents.urls')),
     path('projects/', include('makemake.projects.urls')),
     path('categories/', include('makemake.categories.urls')),
