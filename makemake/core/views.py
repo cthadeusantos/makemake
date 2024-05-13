@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 
 from makemake.core.forms import LoginForm
 
-# Create your views here.
+@login_required
 def home(request):
     return render(request, 'index.html')
 
-# Create your views here.
-def login1(request):
+def login_initial(request):
     if request.user.is_authenticated:
         return render(request, 'index.html')
     if request.method == 'POST':

@@ -3,6 +3,7 @@ from django.forms import formset_factory
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 
@@ -15,9 +16,56 @@ from makemake.documents.models import Document
 
 from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, set_stakeholders_formset, set_buildings_formset
 
+def is_list_empty(lista):
+    return not bool(lista)
+
+def separar_valore_com_espaco(string):
+    # Verifica se a string contém '&' ou '|'
+    if '&' in string and '|' in string:
+        # Caso existam ambos, separamos por '&'
+        lista1 = re.findall(r'[^&|]+(?=&)', string)
+        lista2 = re.findall(r'[^&|]+(?=\|)', string)
+    elif '&' in string:
+        # Se existirem apenas '&', separamos por '&'
+        lista1 = re.findall(r'[^&]+', string)
+        lista2 = []
+    elif '|' in string:
+        # Se existirem apenas '|', separamos por '|'
+        lista1 = []
+        lista2 = re.findall(r'[^|]+', string)
+    else:
+        # Se não houver '&' ou '|', retornamos listas vazias
+        lista1 = []
+        lista2 = []
+    
+    return lista1, lista2
+
+def separar_valores_sem_espaco(string):
+    # Verifica se a string contém '&' ou '|'
+    if '&' in string and '|' in string:
+        # Caso existam ambos, separamos por '&'
+        lista1 = [valor.strip() for valor in re.findall(r'[^&|]+(?=&)', string)]
+        lista2 = [valor.strip() for valor in re.findall(r'[^&|]+(?=\|)', string)]
+    elif '&' in string:
+        # Se existirem apenas '&', separamos por '&'
+        lista1 = [valor.strip() for valor in re.findall(r'[^&]+', string)]
+        lista2 = []
+    elif '|' in string:
+        # Se existirem apenas '|', separamos por '|'
+        lista1 = []
+        lista2 = [valor.strip() for valor in re.findall(r'[^|]+', string)]
+    else:
+        # Se não houver '&' ou '|', retornamos listas vazias
+        lista1 = []
+        lista2 = []
+    
+    return lista1, lista2
+
+@login_required
 def void(request):
     return HttpResponseRedirect('')
 
+@login_required
 def search(request):
     # Expressão regular
     # String de exemplo
@@ -29,25 +77,60 @@ def search(request):
     input_text = request.GET.get('search', None)
 
     if input_text == '' or input_text is None:
-        items = Project.objects.all()
+        items = Project.objects.all().order_by('-year','-code')
         return render(request, 'projects/home.html', {'items': items})
 
     # Verifica se a string corresponde ao padrão
     match = re.match(regex, input_text)
 
-    if match:
+    if match: # Check if pattern is code / year
         x = int(match.group(1))  # Captura o valor de X
         y = int(match.group(2))  # Captura o valor de Y
         # Use Q objects para filtrar seu modelo
         items = Project.objects.filter(Q(code=x) & Q(year=y))
-    else:
-        items = Project.objects.filter(Q(name__icontains=input_text))
+    else:   # Pattern is a free string
+        and_list, or_list = separar_valores_sem_espaco(input_text)
+        if is_list_empty(and_list) and is_list_empty(or_list):
+            items = Project.objects.filter(Q(name__icontains=input_text)).order_by('-year','-code')
+        else:
+            ### FUNCAO ABAIXO NÃO ESTA FUNCIONANDO
+            ### PRECISA REFATORAR PARA FICAR MUITO MELHOR
+            string_and = ''
+            string_or = ''
+            pattern = 'Q(name__icontains='
+            for index, value in enumerate(and_list):
+                string_and += pattern + '"' + value + '"' + ')'
+                if index + 1 != len(and_list):
+                    string_and += ' & '
+                
+            for index, value in enumerate(or_list):
+                string_or += pattern + '"' + value + '"' + ')'
+                if index + 1 != len(or_list):
+                    string_or += ' | '
+            final_string = string_and + " | " + string_or        
+            # if not is_list_empty(and_list) and not is_list_empty(or_list):
+            #     final_string = string_and + " | " + string_or
+            # elif not is_list_empty(and_list) and  is_list_empty(or_list):
+            #     final_string = string_and
+            # else:
+            #     final_string = string_or
+            if not is_list_empty(and_list) and  is_list_empty(or_list):
+                final_string = string_and
+            elif is_list_empty(and_list) and  not is_list_empty(or_list):
+                final_string = string_or
+            items = Project.objects.filter(eval(final_string)).order_by('-year','-code')
+            x = 0
+            
+            
+
     return render(request, 'projects/home.html', {'items': items})
 
+@login_required
 def home(request):
-    items = Project.objects.all()
+    items = Project.objects.all().order_by('-year','-code')
     return render(request, 'projects/home.html', {'items': items})
 
+@login_required
 def delete(request, pk):
     project = Project.objects.get(pk=pk)
     condition1 = len(has_linked_documents(project))
@@ -56,9 +139,11 @@ def delete(request, pk):
     project.delete()
     return home(request)
 
+@login_required
 def has_linked_documents(value):
     return Document.objects.select_related('project').filter(project=value)
 
+@login_required
 def details(request, pk):
     # Get project
     project = Project.objects.get(pk=pk)
@@ -79,7 +164,7 @@ def details(request, pk):
 #     context = {'building_formset': building_formset,}
 #     return render(request, 'projects/partial_new.html', context)
 
-
+@login_required
 def get_select_options(request, pk):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -94,6 +179,7 @@ def get_select_options(request, pk):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
+@login_required
 def get_select_users(request):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -107,6 +193,7 @@ def get_select_users(request):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
+@login_required
 def new(request, project_number=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -181,6 +268,7 @@ def new(request, project_number=None):
     context = {'project_form': project_form, 'project_number': project_number}
     return render(request, 'projects/new.html', context)
 
+@login_required
 def new2(request, project_number=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -268,7 +356,7 @@ def new2(request, project_number=None):
     context = {'project_form': project_form, 'project_number': project_number}
     return render(request, 'projects/new.html', context)
 
-
+@login_required
 def edit2(request, pk=None):
     project_number = pk
     if request.method == 'POST':    # Newly filled form
@@ -379,6 +467,7 @@ def edit2(request, pk=None):
                'stakeholders_formset': stakeholders_formset,}
     return render(request, 'projects/edit.html', context)
 
+@login_required
 def edit(request, pk=None):
     project_number = pk
     extra_forms = 1  # You can set the initial number of forms here

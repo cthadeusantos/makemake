@@ -2,14 +2,17 @@ from django.shortcuts import get_object_or_404, render
 
 from django.db import IntegrityError
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from makemake.buildings.models import Building
 from makemake.buildings.forms import BuildingForm
 
+@login_required
 def home(request):
     items = Building.objects.all().order_by('number')
     return render(request, 'buildings/home.html', {'items': items})
 
+@login_required
 def delete(request, pk):
     project = Building.objects.get(pk=pk)
     try:
@@ -20,6 +23,7 @@ def delete(request, pk):
         messages.info(request, message)
     return home(request)
 
+@login_required
 def new(request):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -52,6 +56,7 @@ def new(request):
     context = {'form': form}
     return render(request, 'buildings/new_or_edit.html', context)
 
+@login_required
 def edit(request, pk=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)

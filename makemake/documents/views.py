@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import ModelChoiceField
+from django.contrib.auth.decorators import login_required
 
 from makemake.buildings.models import Building
 from makemake.categories.models import Category
@@ -8,17 +9,17 @@ from makemake.documents.forms import DocumentForm2, VersionForm
 from makemake.documents.models import Document, Version
 from makemake.projects.models import Project
 
-
+@login_required
 def void(request):
     return HttpResponseRedirect('')
 
-
+@login_required
 def home(request, pk=None):
     instance = Project.objects.get(pk=pk)
     items = Document.objects.filter(project=instance)
     return render(request, 'documents/home.html', {'items': items, 'project_number': pk})
 
-
+@login_required
 def new(request, project_number=None):
     if request.method == 'POST':
         form = DocumentForm2(request.POST, project_number=project_number, prefix='repost')
@@ -51,7 +52,7 @@ def new(request, project_number=None):
                 'project_number': project_number}
     return render(request, 'documents/new.html', context)
 
-
+@login_required
 def edit(request, pk=None, project_number=None):
     if pk:
         document = Document.objects.get(pk=pk)
@@ -76,22 +77,22 @@ def edit(request, pk=None, project_number=None):
                        'project_number': project_number}
             return render(request, 'documents/edit.html', context)
 
-
+#@login_required
 def details(request, pk):
     document = Document.objects.get(pk=pk)
-    versions = Version.objects.filter(document=document)
+    versions = Version.objects.filter(document=document).order_by('-version_number')
     project_number = document.project.id
     context = {'document': document, 'versions': versions, 'project_number': project_number}
     return render(request, 'documents/details.html', context)
 
-
+@login_required
 def delete(request, pk):
     instance = get_object_or_404(Document, id=pk)
     project_number = instance.project.pk
     instance.delete()
     return redirect('home-documents', project_number)
 
-
+@login_required
 def version(request, pk=None):
     if request.method == 'POST':
         form = VersionForm(request.POST, request.FILES, pk=pk)
@@ -111,7 +112,7 @@ def version(request, pk=None):
     context = {'form': VersionForm(pk=pk), 'pk': pk}
     return render(request, 'documents/version.html', context)
 
-
+#@login_required
 def download_file(request, file_id):
     uploaded_file = Version.objects.get(pk=file_id)
     response = HttpResponse(uploaded_file.upload_url, content_type='application/force-download')

@@ -2,7 +2,7 @@
 {% block content %}
     <span><a href="{% url 'home-documents' project_number %}">[DOCUMENTS]</a></span>
     <H1>Document details</H1>
-    <p>{{ document.id }}</p>
+    <p>{{ document.version_number }}</p>
     <p>{{ document.summary }}</p>
     <p>{{ document.description }}</p>
     <p>{{ document.created_at }}</p>
