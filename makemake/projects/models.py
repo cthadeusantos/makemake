@@ -1,9 +1,13 @@
-from typing import Any
 from django.db import models
 from django.contrib.auth.models import User
 
+from typing import Any
 from datetime import date, datetime
+
 from makemake.buildings.models import Building
+#from makemake.agreements.models import Agreement
+
+from makemake.core.choices import PROJECT_STATUS_CHOICES
 
 def ano_corrente():
     return datetime.now().year
@@ -18,6 +22,8 @@ class Project(models.Model):
     buildings = models.ManyToManyField(Building, related_name='buildings', blank=True)
     project_manager = models.ForeignKey(User, related_name='manager', on_delete=models.PROTECT, blank=True, null=True,)
     project_manager_support = models.ForeignKey(User, related_name='support', on_delete=models.PROTECT, blank=True, null=True,)
+    project_status = models.PositiveSmallIntegerField(null=True, blank=True, default=None, choices=PROJECT_STATUS_CHOICES,)
+    remarks = models.TextField(default='', blank=True, null=True)
     members = models.ManyToManyField(User, related_name='members', blank=True)
     #project_stakeholders = models.ManyToManyField(User, related_name='stakeholders', blank=True)
     stakeholders = models.ManyToManyField(User, related_name='stakeholders', blank=True)

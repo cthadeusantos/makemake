@@ -13,7 +13,7 @@
 <h1>New or edit</h1>
 
      <div class="container-fluid">
-        <form class="form-horizontal" role="form" method="post" id="project-form">
+        <form class="form-horizontal" role="form" method="post" id="add-form">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input id="send-form" type="submit" value="Submit" class="btn btn-primary" onclick="removeDisabled()">

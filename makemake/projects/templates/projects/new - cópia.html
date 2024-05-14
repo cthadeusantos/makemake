@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+<!-- projects/new.html -->
+<!--
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+-->
+
+{% block topmenu%}
+<!-- This is an example component -->
+<div class="grid min-h-[140px] w-full place-items-left overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+  <div class="flex flex-col gap-4 w-max">
+    <div class="flex divide-x divide-blue-600 row">
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+        type="button">
+        <a href="{% url 'home-categories' %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-categories" title="home categories"></a>
+      </button>
+      <!--
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
+      </button>
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+        type="button">
+        <a href="{% url 'new-categories' %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new project"></a>
+      </button> 
+    -->
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Select Box</title>
+    <!-- <script src="https://unpkg.com/htmx.org@1.6.0/dist/htmx.js"></script> -->
+
+    <span><a href="{% url 'home-projects' %}">[PROJECTS]</a></span>
+    <h1>New project FORM</h1>
+
+<div class="container-fluid">
+    <form class="form-horizontal" role="form" method="post" id="project-form">
+        {% csrf_token %}
+        {{ project_form.as_p }}
+
+        <div class="m-4">
+          <ul class="nav nav-tabs" id="myTab">
+              <li class="nav-item">
+                  <a href="#tab1" class="nav-link active" data-bs-toggle="tab">Buildings</a>
+              </li>
+              <li class="nav-item">
+                  <a href="#tab2" class="nav-link" data-bs-toggle="tab">Members</a>
+              </li>
+              <li class="nav-item">
+                  <a href="#tab3" class="nav-link" data-bs-toggle="tab">stakeholders</a>
+              </li>
+          </ul>
+          <div class="tab-content">
+              <div class="tab-pane fade show active" id="tab1">
+                  <h4 class="mt-2">Home tab content</h4>
+                  <p>
+                      <!-- Contêiner para adicionar selects dinamicamente -->
+                      <!-- Adiciona novos prédios -->
+                      <p><div id="select-container"></div></p>
+                      <!-- Botão para adicionar novo select -->
+                      <button class="btn btn-primary" type="button" id="add-select" disabled>Add Building</button>
+                  </p>
+              </div>
+              <div class="tab-pane fade" id="tab2">
+                  <h4 class="mt-2">Profile tab content</h4>
+                  <p>
+                    <!-- Contêiner para adicionar selects dinamicamente -->
+                    <!-- Adiciona novos membros -->
+                    <p><div id="select-container-member"></div></p>
+                    <!-- Botão para adicionar novo select -->
+                    <button class="btn btn-primary" type="button" id="add-select-member">Add member</button>
+                  </p>
+              </div>
+              <div class="tab-pane fade" id="tab3">
+                  <h4 class="mt-2">Messages tab content</h4>
+                  <p>
+                    <!-- Contêiner para adicionar selects dinamicamente -->
+                    <!-- Adiciona novos stakeholders -->
+                    <p><div id="select-container-stakeholder"></div></p>
+                    <!-- Botão para adicionar novo select -->
+                    <button class="btn btn-primary" type="button" id="add-select-stakeholder">Add stakeholder</button>
+                  </p>
+              </div>
+          </div>
+      </div>
+
+        <input id="send-form" type="submit" value="Submit" class="btn btn-primary" disabled>
+    </form>
+
+</div> <!-- FLUID -->
+
+    <!-- Script Ajax para adicionar selects -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{% static 'js/project.js' %}"></script>
+
+{% endblock %}

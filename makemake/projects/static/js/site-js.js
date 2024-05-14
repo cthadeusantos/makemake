@@ -35,7 +35,7 @@ async function addSelectMember() {
         selectCounterMember++;
 
         // Criar um novo select com ID único
-        var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="form-select form-select-sm">';
+        var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
         for (var i = 0; i < data.options.length; i++) {
             selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
         }
@@ -61,7 +61,7 @@ async function addSelectStakeholder() {
         selectCounterStakeholder++;
 
         // Criar um novo select com ID único
-        var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="form-select form-select-sm">';
+        var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
         for (var i = 0; i < data.options.length; i++) {
             selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
         }

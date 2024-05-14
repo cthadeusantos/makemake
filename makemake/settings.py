@@ -39,13 +39,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'test_without_migrations',
     'django_extensions',
-    'django_htmx',  # HTMX
+    #'django_htmx',  # HTMX
     'makemake.core',
+    'makemake.profiles',
     'makemake.categories',
     'makemake.documents',
     'makemake.buildings',
     'makemake.projects',
     'makemake.sites',
+    'makemake.agreements',
+    'makemake.companies',
+    'makemake.budgets',
+    'makemake.units',
+    'makemake.compositions',
 ]
 
 MIDDLEWARE = [
@@ -55,8 +61,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.LoginRequiredMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_htmx.middleware.HtmxMiddleware',  # HTMX
+    #'django_htmx.middleware.HtmxMiddleware',  # HTMX
 ]
 
 ROOT_URLCONF = 'makemake.urls'
@@ -148,3 +155,5 @@ SESSION_COOKIE_AGE=28800 # 8 hours
 
 # determines whether session cookies persist even after the browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
+INSTALLED_APPS += ('global_permissions', )

@@ -1,15 +1,13 @@
 from django.db import models
 from datetime import date
 
-
 class Category(models.Model):
     code = models.CharField(max_length=3, default='', unique=True)
     name = models.CharField(max_length=50, default='',)
     description = models.TextField(default='', blank=True)
-    #created_at = models.DateField(default=date.today, editable=True)
-    #updated_at = models.DateField(default=date.today, editable=True)
-    category = models.ForeignKey('self', related_name='relcategory', blank=True, null=True, on_delete=models.PROTECT)
-    objects = models.Manager()  # The default manager
+    parents = models.ManyToManyField('self', blank=True, symmetrical=False)
+    fordocs = models.BooleanField(default=True)
+    forbudgets = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Categories'

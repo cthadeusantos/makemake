@@ -7,7 +7,7 @@ from makemake.projects.models import Project
 from makemake.categories.models import Category
 from makemake.buildings.models import Building
 from makemake.core.custom_functions import left_pad
-from makemake.core.choices import FILE_EXTENSION_CHOICES
+from makemake.core.choices import FILE_EXTENSION_CHOICES, DOCUMENT_STATUS_CHOICES
 
 
 class Document(models.Model):
@@ -28,6 +28,7 @@ class Document(models.Model):
                                  null=True,
                                  )
     doctype = models.PositiveSmallIntegerField(null=False, default=None, choices=FILE_EXTENSION_CHOICES,)
+    docstatus = models.PositiveSmallIntegerField(null=True, blank=True, default=0, choices=DOCUMENT_STATUS_CHOICES,)
     #categories = models.ManyToManyField(Category, related_name='categories')
     categories = models.ForeignKey(Category,
                                    related_name='categories',
@@ -56,10 +57,11 @@ class Version(models.Model):
         building = self.document.building.number
         numproject = left_pad(numproject)
         building_number = left_pad(building)
+        coding = str(self.document.project.year) + str(self.document.project.code)
         #path = '{0}/{1}/{2}'.format(
         path = '{0}/{1}/{2}/{3}'.format(
             building_number,
-            numproject,
+            coding,
             category_code,
             filename
         )

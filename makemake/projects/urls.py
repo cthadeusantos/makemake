@@ -1,6 +1,7 @@
 from django.urls import path
 
 from makemake.projects.views import *
+#from makemake.agreements.views import home2
 
 urlpatterns = [
     path('', home, name='home-projects'),

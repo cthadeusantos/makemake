@@ -8,5 +8,6 @@ class CategoryAdmin(admin.ModelAdmin):
         'code',
         'name',
         'description',
-        'category',
+        'fordocs',
+        'forbudgets',
     )

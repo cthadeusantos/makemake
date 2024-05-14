@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block topmenu%}
+<!-- This is an example component -->
+<div class="grid min-h-[140px] w-full place-items-left overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+  <div class="flex flex-col gap-4 w-max">
+    <div class="flex divide-x divide-blue-600 row">
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-3 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+        type="button">
+        <a href="{% url 'home-compositions' %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-compositions" title="home compositions"></a>
+      </button>
+      {% comment %} <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-3 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
+      </button> {% endcomment %}
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-3 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="Home"></a>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<script>
+  function addForm() {
+      const formsetDiv = document.getElementById('formset');
+      const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+      const currentFormCount = formsetDiv.children.length;
+      const newFormCount = parseInt(totalForms.value);
+
+      // Clone the empty form
+      const newForm = formsetDiv.children[0].cloneNode(true);
+      newForm.innerHTML = newForm.innerHTML.replace(/form-\d+-/g, `form-${newFormCount}-`);
+
+      // Clear the input value
+      const inputs = newForm.getElementsByTagName('input');
+      for (let i = 0; i < inputs.length; i++) {
+          inputs[i].value = '';
+      }
+
+      // Append the new form
+      formsetDiv.appendChild(newForm);
+
+      // Update the number of total forms
+      totalForms.value = newFormCount + 1;
+  }
+</script>
+
+  <span class="bg-blue-500 text-white font-bold py-1 px-2 w-full rounded-full mt-4 flex items-center justify-center">
+    {{ composition.description }}
+  </span>
+  <form class="w-full" role="form" method="post" id="add-form">
+    {% csrf_token %}
+      <div class="mt-4 container mx-auto">
+
+        {{ formset.management_form }}
+        {% for form in formset %}
+          <div class="form-row flex">
+              {{ form.label }}
+              <span class="text-xs text-red-500">{{ form.label.errors }}</span>
+              {{ form.burdened }}
+              <span class="text-xs text-red-500">{{ form.burdened.errors }}</span>
+              {{ form.place }}
+              <span class="text-xs text-red-500">{{ form.place.errors }}</span>
+              {{ form.price }}
+              <span class="text-xs text-red-500">{{ form.price.errors }}</span>
+            <button type="button" onclick="addForm()" class="ml-2 h-8 text-sm px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+              <img src="{% static 'images/plus.svg' %}" alt="Dropdown Arrow" class="w-4 h-4 text-gray-700 dark:text-white">
+            </button>
+          </div>
+        {% endfor %}
+        <input id="send-form" type="submit" value="Submit" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      </div>
+</form>
+
+ 
+  <div class="flex h-screen">
+    <!-- Metade da tela para a tabela -->
+    <div class="w-1/2 mt-4">
+      <div class="bg-white overflow-auto">
+        <span class="bg-blue-500 text-white py-1 px-2 w-full rounded-full mb-4 flex items-center justify-center">
+          Historic
+        </span>
+        <table class="min-w-full bg-white">
+          <thead class="bg-gray-800 text-white">
+            <tr>
+              <th class="w-1/3 text-left py-2 px-4 uppercase font-semibold text-sm">Reference</th>
+              <th class="text-left py-2 px-4 uppercase font-semibold text-sm">Date</th>
+              <th class="text-left py-2 px-4 uppercase font-semibold text-sm">Username</th>
+              <th class="w-1/3 text-left py-2 px-4 uppercase font-semibold text-sm">Price</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700">
+            {% for price in prices %}
+              {% if forloop.counter|divisibleby:"2" %}
+                <tr>
+                  <td class="w-1/3 text-left py-2 px-4">{{ price.label.label }}</td>
+                  <td class="text-left py-2 px-4"><a class="hover:text-blue-500">{{ price.date|date:"Y/m/d" }}</a></td>
+                  <td class="text-left py-2 px-4"><a class="hover:text-blue-500">{{ price.user.username }}</a></td>
+                  <td class="w-1/3 text-left py-2 px-4">{{ price.price }}</td>
+                </tr>
+              {% else %}
+                <tr class="bg-gray-200">
+                  <td class="w-1/3 text-left py-2 px-4">{{ price.label.label }}</td>
+                  <td class="text-left py-2 px-4"><a class="hover:text-blue-500">{{ price.date|date:"Y/m/d" }}</a></td>
+                  <td class="text-left py-2 px-4"><a class="hover:text-blue-500">{{ price.user.username }}</a></td>
+                  <td class="w-1/3 text-left py-2 px-4">{{ price.price }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Metade da tela para o gráfico (futuro) -->
+    <!-- <div class="w-1/2 bg-gray-100 flex items-center justify-center"> -->
+      <!-- <div class="w-1/2 bg-gray-100 flex justify-center"> -->
+      <div class="w-1/2 bg-gray-100 items-center ml-4">
+      <!-- Conteúdo do gráfico será inserido aqui no futuro -->
+      <span>Gráfico Aqui<br>    
+      <label for="city">Escolha uma cidade:</label>
+        <select name="city" id="city">
+            {% for value, label in places_choices %}
+                <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+      </span>
+      <br>
+        <div class="p-6 bg-white">
+            <canvas id="chartTwo" width="500" height="300"></canvas>
+        </div>
+    </div>
+  </div>
+
+<!-- AlpineJS -->
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+<!-- Font Awesome -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+<!-- ChartJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+
+{{ grafico|safe }}
+
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.db import models
-from makemake.core.choices import CITIES_CHOICES
+from makemake.core.choices import PLACES_CHOICES
 
 
 class Site(models.Model):
@@ -7,7 +7,7 @@ class Site(models.Model):
                             default='')
     place = models.PositiveSmallIntegerField(
         default=0,
-        choices=CITIES_CHOICES)
+        choices=PLACES_CHOICES)
 
     objects = models.Manager()  # The default manager
 

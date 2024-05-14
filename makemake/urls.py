@@ -17,17 +17,25 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 import makemake.core.views
-import makemake.documents.views
+#import makemake.documents.views
 
 urlpatterns = [
-    path('', makemake.core.views.home, name='home'),
-    path('accounts/login/', makemake.core.views.login_initial, name='login'),
-    path('home/', makemake.core.views.home, name='home'),
+    #path('', makemake.core.views.home, name=''),
+    #path('', makemake.core.views.home, name='home'),
+    #path('accounts/login/', makemake.core.views.login_initial, name='login'),
+    #path('accounts/logout/', makemake.core.views.logout_user, name='logout'),
+    #path('registration/', makemake.core.views.register, name='register'),
+    path('', include('makemake.core.urls')),
+    path('agreements/', include('makemake.agreements.urls')),
+    path('buildings/', include('makemake.buildings.urls')),
+    path('categories/', include('makemake.categories.urls')),
+    path('companies/', include('makemake.companies.urls')),
+    path('compositions/', include('makemake.compositions.urls')),
     path('documents/', include('makemake.documents.urls')),
     path('projects/', include('makemake.projects.urls')),
-    path('categories/', include('makemake.categories.urls')),
     path('sites/', include('makemake.sites.urls')),
-    path('buildings/', include('makemake.buildings.urls')),
+    path('budgets/', include('makemake.budgets.urls')),
+    path('units/', include('makemake.units.urls')),
     #path('documents/', makemake.documents.views.home),
     #path('documents/new/', makemake.documents.views.new),
     path('admin/', admin.site.urls),

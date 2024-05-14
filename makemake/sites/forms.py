@@ -5,7 +5,8 @@ from django.forms import ModelChoiceField, ChoiceField
 from makemake.sites.models import Site
 from makemake.buildings.models import Building
 
-from makemake.core.choices import CITIES_CHOICES
+from makemake.core.choices import PLACES_CHOICES
+from makemake.core.tailwind_classes import *
 
 # class SiteForm(ModelForm):
 #     class Meta:
@@ -33,13 +34,14 @@ class SiteForm(forms.Form):
                                widget=forms.Textarea(attrs={'name': 'name','rows': 1,
                                                             'cols': 100,
                                                             'style': 'resize:none',
-                                                            'class': 'form-control form-control-sm',
-                                                            'maxlenght': 100,
-                                                            }))
+                                                            'class': CSS_CHARFIELD_1,
+                                                            }),
+                                                            max_length=100,
+                                                            )
     place = ChoiceField(label='Place',
-                             choices=CITIES_CHOICES,
+                             choices=PLACES_CHOICES,
                              required=False,
-                             widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
+                             widget=forms.Select(attrs={'class': CSS_SELECT_1}))
     
     def __init__(self, *args, **kwargs):
         prefix = kwargs.pop('prefix', None)

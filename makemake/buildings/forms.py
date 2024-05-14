@@ -9,6 +9,7 @@ from django.forms import ChoiceField
 from datetime import datetime
 
 from makemake.core.choices import BUILDING_STATUS_CHOICES
+from makemake.core.tailwind_classes import *
 
 class SelectBuildingForm(forms.Form):
     building = forms.ModelChoiceField(
@@ -22,31 +23,33 @@ class BuildingForm(forms.Form):
                               widget=forms.Textarea(attrs={'name': 'summary','rows': 2,
                                                            'cols': 100,
                                                            'style': 'resize:none',
-                                                           'class': 'form-control form-control-sm',
-                                                           }))
+                                                           'class': CSS_TEXTFIELD_1,
+                                                           }),
+                                                           max_length=100,
+                                                           )
     number = forms.IntegerField(label="Number",
                                 widget=forms.NumberInput(attrs={'name': 'number',
                                                                 'type': 'number',
-                                                                'class': 'form-control form-control-sm',
+                                                                'class': CSS_CHARFIELD_1,
                                                                 }))
     #status = forms.IntegerField()
     site = forms.ModelChoiceField(
         queryset=Site.objects.all(),
         required=True,
-        widget=forms.Select(attrs={'class': 'form-select form-select-sm', 'readonly': 'readonly',}),
+        widget=forms.Select(attrs={'class': CSS_SELECT_1, 'readonly': 'readonly',}),
         label='Site'
     )
-    status = ChoiceField(choices=BUILDING_STATUS_CHOICES, required=True, label="Status", widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
+    status = ChoiceField(choices=BUILDING_STATUS_CHOICES, required=True, label="Status", widget=forms.Select(attrs={'class': CSS_SELECT_1}))
     created_at = forms.DateField(label='Created date',
                                  widget=forms.DateInput(attrs={'name': 'created_at',
                                                                'type': 'date',
-                                                               'class': 'form-control form-control-sm',
+                                                               'class': CSS_CHARFIELD_1,
                                                                'readonly': 'True',
                                                                }))
     updated_at = forms.DateField(label='Updated date',
                                  widget=forms.DateInput(attrs={'name': 'updated_at',
                                                                'type': 'date',
-                                                               'class': 'form-control form-control-sm',
+                                                               'class': CSS_CHARFIELD_1,
                                                                'readonly': 'True'
                                                                }))
     
@@ -68,4 +71,5 @@ class BuildingForm(forms.Form):
 
             self.fields['number'].widget.attrs['readonly'] = True
             self.fields['site'].widget.attrs['disabled'] = True
+
             

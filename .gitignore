@@ -1,9 +1,11 @@
 # Directories
+env
 .env
+venv
+.venv
 .idea
 .vscode
 .DS_Store
-migrations
 __pycache__
 media
 
@@ -11,3 +13,13 @@ media
 *.sqlite3
 *pyc
 .python-version
+
+# Ignore all files in migrations directories
+migrations/*
+
+# If there are migrations directories at multiple levels, use:
+# Ignore all files in migrations directories
+**/migrations/*
+
+# Except the __init__.py files
+!**/migrations/__init__.py

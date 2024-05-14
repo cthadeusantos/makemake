@@ -10,62 +10,20 @@ from django.contrib import messages
 from makemake.sites.models import Site
 from makemake.buildings.models import Building
 from makemake.buildings.forms import BuildingForm, SelectBuildingForm
-from makemake.projects.forms import ProjectForm, ProjectBuildingForm, ProjectForm2, ProjectForm3
+# from makemake.projects.forms import ProjectForm, ProjectBuildingForm, ProjectForm2, ProjectForm3
+from makemake.projects.forms import ProjectForm, ProjectBuildingForm
 from makemake.projects.models import Project
 from makemake.documents.models import Document
 
 from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, set_stakeholders_formset, set_buildings_formset
 
-def is_list_empty(lista):
-    return not bool(lista)
+from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco
 
-def separar_valore_com_espaco(string):
-    # Verifica se a string contém '&' ou '|'
-    if '&' in string and '|' in string:
-        # Caso existam ambos, separamos por '&'
-        lista1 = re.findall(r'[^&|]+(?=&)', string)
-        lista2 = re.findall(r'[^&|]+(?=\|)', string)
-    elif '&' in string:
-        # Se existirem apenas '&', separamos por '&'
-        lista1 = re.findall(r'[^&]+', string)
-        lista2 = []
-    elif '|' in string:
-        # Se existirem apenas '|', separamos por '|'
-        lista1 = []
-        lista2 = re.findall(r'[^|]+', string)
-    else:
-        # Se não houver '&' ou '|', retornamos listas vazias
-        lista1 = []
-        lista2 = []
-    
-    return lista1, lista2
 
-def separar_valores_sem_espaco(string):
-    # Verifica se a string contém '&' ou '|'
-    if '&' in string and '|' in string:
-        # Caso existam ambos, separamos por '&'
-        lista1 = [valor.strip() for valor in re.findall(r'[^&|]+(?=&)', string)]
-        lista2 = [valor.strip() for valor in re.findall(r'[^&|]+(?=\|)', string)]
-    elif '&' in string:
-        # Se existirem apenas '&', separamos por '&'
-        lista1 = [valor.strip() for valor in re.findall(r'[^&]+', string)]
-        lista2 = []
-    elif '|' in string:
-        # Se existirem apenas '|', separamos por '|'
-        lista1 = []
-        lista2 = [valor.strip() for valor in re.findall(r'[^|]+', string)]
-    else:
-        # Se não houver '&' ou '|', retornamos listas vazias
-        lista1 = []
-        lista2 = []
-    
-    return lista1, lista2
-
-@login_required
 def void(request):
     return HttpResponseRedirect('')
 
-@login_required
+
 def search(request):
     # Expressão regular
     # String de exemplo
@@ -119,18 +77,17 @@ def search(request):
             elif is_list_empty(and_list) and  not is_list_empty(or_list):
                 final_string = string_or
             items = Project.objects.filter(eval(final_string)).order_by('-year','-code')
-            x = 0
             
             
 
     return render(request, 'projects/home.html', {'items': items})
 
-@login_required
+
 def home(request):
     items = Project.objects.all().order_by('-year','-code')
     return render(request, 'projects/home.html', {'items': items})
 
-@login_required
+
 def delete(request, pk):
     project = Project.objects.get(pk=pk)
     condition1 = len(has_linked_documents(project))
@@ -139,11 +96,11 @@ def delete(request, pk):
     project.delete()
     return home(request)
 
-@login_required
+
 def has_linked_documents(value):
     return Document.objects.select_related('project').filter(project=value)
 
-@login_required
+
 def details(request, pk):
     # Get project
     project = Project.objects.get(pk=pk)
@@ -164,7 +121,7 @@ def details(request, pk):
 #     context = {'building_formset': building_formset,}
 #     return render(request, 'projects/partial_new.html', context)
 
-@login_required
+
 def get_select_options(request, pk):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -179,7 +136,7 @@ def get_select_options(request, pk):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
-@login_required
+
 def get_select_users(request):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -212,6 +169,8 @@ def new(request, numproject=None):
             h = project_form.cleaned_data['project_manager']
             i = project_form.cleaned_data['project_manager_support']
             j = project_form.cleaned_data['interlocutor']
+            k = project_form.cleaned_data['remarks']
+            l = project_form.cleaned_data['project_status']
 
             register = None
             # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
@@ -221,7 +180,7 @@ def new(request, numproject=None):
                 register = a
 
             # Logica para gravar instância principal
-            b2 = Project(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, interlocutor=j)
+            b2 = Project(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, project_status=l, interlocutor=j, remarks=k)
             b2.save()
 
             # Save buildings
@@ -288,6 +247,8 @@ def new2(request, numproject=None):
             h = project_form.cleaned_data['project_manager']
             i = project_form.cleaned_data['project_manager_support']
             j = project_form.cleaned_data['interlocutor']
+            k = project_form.cleaned_data['remarks']
+            l = project_form.cleaned_data['project_status']
 
             register = None
             # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
@@ -297,7 +258,7 @@ def new2(request, numproject=None):
                 register = a
 
             # Logica para gravar instância principal
-            b2 = Project(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, interlocutor=j)
+            b2 = Project(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, project_status=l, interlocutor=j, remarks=k)
             b2.save()
 
             # Save buildings
@@ -354,7 +315,7 @@ def new2(request, numproject=None):
     context = {'project_form': project_form, 'numproject': numproject}
     return render(request, 'projects/new.html', context)
 
-@login_required
+
 def edit2(request, pk=None):
     numproject = pk
     if request.method == 'POST':    # Newly filled form
@@ -374,6 +335,8 @@ def edit2(request, pk=None):
             h = project_form.cleaned_data['project_manager']
             i = project_form.cleaned_data['project_manager_support']
             j = project_form.cleaned_data['interlocutor']
+            k = project_form.cleaned_data['remarks']
+            l = project_form.cleaned_data['project_status']
 
             register = a
             # # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
@@ -384,7 +347,7 @@ def edit2(request, pk=None):
 
             # Logica para gravar instância principal
             b2 = Project.objects.filter(pk=pk)
-            b2.update(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, interlocutor=j)
+            b2.update(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, project_status=l, interlocutor=j, remarks=k)
             #b2.save()
             b2 = Project.objects.get(pk=pk)
 
@@ -465,109 +428,109 @@ def edit2(request, pk=None):
                'stakeholders_formset': stakeholders_formset,}
     return render(request, 'projects/edit.html', context)
 
-@login_required
-def edit(request, pk=None):
-    numproject = pk
-    extra_forms = 1  # You can set the initial number of forms here
-    #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
+# 
+# def edit(request, pk=None):
+#     numproject = pk
+#     extra_forms = 1  # You can set the initial number of forms here
+#     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
-    if request.method == 'POST':
-        project_form = ProjectForm2(request.POST, pk=pk)
-        project_form.fields['site'].widget.attrs['disabled'] = True
-        #if project_form.is_valid() and building_formset.is_valid():
+#     if request.method == 'POST':
+#         project_form = ProjectForm2(request.POST, pk=pk)
+#         project_form.fields['site'].widget.attrs['disabled'] = True
+#         #if project_form.is_valid() and building_formset.is_valid():
 
-        # Consulta para obter os prédios que pertencem ao site e não estão associados ao projeto
-        # Evita inserção de dados repetidos
-        project_profile = Project.objects.get(pk=numproject)
-        siteID = project_profile.buildings.first().site.id
-        buildings_query = Building.objects.filter(site_id=siteID)
-        inner_queryset = Project.objects.filter(Q(id=pk)&Q(buildings__site=siteID))
-        results = buildings_query.exclude(buildings__id__in=inner_queryset).values_list('id', flat=True)
+#         # Consulta para obter os prédios que pertencem ao site e não estão associados ao projeto
+#         # Evita inserção de dados repetidos
+#         project_profile = Project.objects.get(pk=numproject)
+#         siteID = project_profile.buildings.first().site.id
+#         buildings_query = Building.objects.filter(site_id=siteID)
+#         inner_queryset = Project.objects.filter(Q(id=pk)&Q(buildings__site=siteID))
+#         results = buildings_query.exclude(buildings__id__in=inner_queryset).values_list('id', flat=True)
 
-        # Execute a consulta
-        #queryset = results.distinct()
-        buildings_queryset = list(results.distinct())
+#         # Execute a consulta
+#         #queryset = results.distinct()
+#         buildings_queryset = list(results.distinct())
 
-        # Consulta para obter os usuários que pertencem ao projeto
-        # Evita inserção de dados repetidos
-        members_query = list(User.objects.filter(members=pk).values_list('id', flat=True))
+#         # Consulta para obter os usuários que pertencem ao projeto
+#         # Evita inserção de dados repetidos
+#         members_query = list(User.objects.filter(members=pk).values_list('id', flat=True))
 
-        # Consulta para obter os stakeholders que pertencem ao projeto
-        # Evita inserção de dados repetidos
-        stakeholders_query = list(User.objects.filter(stakeholders=pk).values_list('id', flat=True))
+#         # Consulta para obter os stakeholders que pertencem ao projeto
+#         # Evita inserção de dados repetidos
+#         stakeholders_query = list(User.objects.filter(stakeholders=pk).values_list('id', flat=True))
 
-        if project_form.is_valid():
-            a = project_form.cleaned_data['name']
-            b = project_form.cleaned_data['description']
-            c = project_form.cleaned_data['created_at']
-            d = project_form.cleaned_data['updated_at']
-            e = project_form.cleaned_data['site']
+#         if project_form.is_valid():
+#             a = project_form.cleaned_data['name']
+#             b = project_form.cleaned_data['description']
+#             c = project_form.cleaned_data['created_at']
+#             d = project_form.cleaned_data['updated_at']
+#             e = project_form.cleaned_data['site']
 
-            # Logica para gravar instância principal
-            b2 = Project.objects.filter(pk=pk)
-            b2.update(name=a, description=b, updated_at=d)
-            b2 = Project.objects.get(pk=pk)
+#             # Logica para gravar instância principal
+#             b2 = Project.objects.filter(pk=pk)
+#             b2.update(name=a, description=b, updated_at=d)
+#             b2 = Project.objects.get(pk=pk)
 
-            # Save Buildings
-            counter = 0
-            keys = set()
-            #while (value := request.POST.get('form-'+str(counter)+'building', '')) != '':
-            for value in buildings_queryset:
-                if value not in keys:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.buildings.add(Building.objects.get(pk=value))
-                counter += 1
+#             # Save Buildings
+#             counter = 0
+#             keys = set()
+#             #while (value := request.POST.get('form-'+str(counter)+'building', '')) != '':
+#             for value in buildings_queryset:
+#                 if value not in keys:
+#                     # Logica para gravar
+#                     keys.add(value)
+#                     b2.buildings.add(Building.objects.get(pk=value))
+#                 counter += 1
 
-            # Save members
-            keys = set()
-            # Define o padrão que as chaves devem seguir
-            padrao = re.compile(r'form-\d+-members')
+#             # Save members
+#             keys = set()
+#             # Define o padrão que as chaves devem seguir
+#             padrao = re.compile(r'form-\d+-members')
 
-            # Seleciona as chaves que correspondem ao padrão    
-            chaves_selecionadas = [chave for chave in request.POST.keys() if padrao.match(chave)]
+#             # Seleciona as chaves que correspondem ao padrão    
+#             chaves_selecionadas = [chave for chave in request.POST.keys() if padrao.match(chave)]
 
-            while chaves_selecionadas:
-                value = int(request.POST[chaves_selecionadas.pop()])
-                if value not in keys and value not in members_query:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.members.add(User.objects.get(pk=value))
+#             while chaves_selecionadas:
+#                 value = int(request.POST[chaves_selecionadas.pop()])
+#                 if value not in keys and value not in members_query:
+#                     # Logica para gravar
+#                     keys.add(value)
+#                     b2.members.add(User.objects.get(pk=value))
 
-            # Save stakeholders
-            keys = set()
-            # Define o padrão que as chaves devem seguir
-            padrao = re.compile(r'form-\d+-stakeholders')
+#             # Save stakeholders
+#             keys = set()
+#             # Define o padrão que as chaves devem seguir
+#             padrao = re.compile(r'form-\d+-stakeholders')
 
-            # Seleciona as chaves que correspondem ao padrão    
-            chaves_selecionadas = [chave for chave in request.POST.keys() if padrao.match(chave)]
+#             # Seleciona as chaves que correspondem ao padrão    
+#             chaves_selecionadas = [chave for chave in request.POST.keys() if padrao.match(chave)]
 
-            while chaves_selecionadas:
-                value = int(request.POST[chaves_selecionadas.pop()])
-                if value not in keys and value not in stakeholders_query:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.stakeholders.add(User.objects.get(pk=value))
+#             while chaves_selecionadas:
+#                 value = int(request.POST[chaves_selecionadas.pop()])
+#                 if value not in keys and value not in stakeholders_query:
+#                     # Logica para gravar
+#                     keys.add(value)
+#                     b2.stakeholders.add(User.objects.get(pk=value))
 
-    project_profile = Project.objects.get(pk=numproject)
-    #members = project_profile.members.all()
-    #stackholders = project_profile.members.all()
-    project_form = ProjectForm2(instance=project_profile, pk=numproject)
-    members_formset = set_MembersFormSet(project_profile)
-    stakeholders_formset = set_stakeholders_formset(project_profile)
+#     project_profile = Project.objects.get(pk=numproject)
+#     #members = project_profile.members.all()
+#     #stackholders = project_profile.members.all()
+#     project_form = ProjectForm2(instance=project_profile, pk=numproject)
+#     members_formset = set_MembersFormSet(project_profile)
+#     stakeholders_formset = set_stakeholders_formset(project_profile)
     
-    # Make selectbox
-    siteID = project_profile.buildings.first().site.id 
-    buildings_formset = set_buildings_formset(project_profile)
-    criterion1 = Q(site_id=siteID)
-    queryset = Building.objects.filter(criterion1)
-    for form in buildings_formset.forms:
-        form.fields['building'].queryset = queryset
+#     # Make selectbox
+#     siteID = project_profile.buildings.first().site.id 
+#     buildings_formset = set_buildings_formset(project_profile)
+#     criterion1 = Q(site_id=siteID)
+#     queryset = Building.objects.filter(criterion1)
+#     for form in buildings_formset.forms:
+#         form.fields['building'].queryset = queryset
 
-    context = {'project_form': project_form,
-               'numproject': numproject,
-               'members_formset': members_formset,
-               'stakeholders_formset': stakeholders_formset,
-               'buildings_formset': buildings_formset,
-               }
-    return render(request, 'projects/edit.html', context)
+#     context = {'project_form': project_form,
+#                'numproject': numproject,
+#                'members_formset': members_formset,
+#                'stakeholders_formset': stakeholders_formset,
+#                'buildings_formset': buildings_formset,
+#                }
+#     return render(request, 'projects/edit.html', context)

@@ -1,18 +1,22 @@
 from django.shortcuts import get_object_or_404, render
-
 from django.db import IntegrityError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from makemake.buildings.models import Building
 from makemake.buildings.forms import BuildingForm
 
-@login_required
+from makemake.core.custom_functions import separar_valores_sem_espaco, is_list_empty
+
+import re
+
+
 def home(request):
     items = Building.objects.all().order_by('number')
     return render(request, 'buildings/home.html', {'items': items})
 
-@login_required
+
 def delete(request, pk):
     project = Building.objects.get(pk=pk)
     try:
@@ -23,10 +27,59 @@ def delete(request, pk):
         messages.info(request, message)
     return home(request)
 
-@login_required
+
+def search(request):
+    # Expressão regular
+    # String de exemplo
+    #string = "   123   /   456  "
+
+    regex = r"^\s*(\d+)\s*\/\s*(\d+)\s*$"
+
+    # Texto de consulta enviado através do formulário
+    input_text = request.GET.get('search', None)
+
+    if input_text == '' or input_text is None:
+        items = Building.objects.all().order_by('number', 'name')
+        return render(request, 'buildings/home.html', {'items': items})
+
+    # Verifica se a string corresponde ao padrão
+    match = re.match(regex, input_text)
+
+    if match: # Check if pattern is code / year
+        x = int(match.group(1))  # Captura o valor de X
+        y = int(match.group(2))  # Captura o valor de Y
+        
+        # Usa Q objects para filtrar o modelo
+        items = Building.objects.filter(Q(name=x) & Q(name=y)).order_by('number', 'name')
+    else:   # Pattern is a free string
+        and_list, or_list = separar_valores_sem_espaco(input_text)
+        if is_list_empty(and_list) and is_list_empty(or_list):
+            items = Building.objects.filter(Q(name__icontains=input_text)).order_by('number', 'name')
+        else:
+            ### FUNCAO ABAIXO NÃO ESTA FUNCIONANDO
+            ### PRECISA REFATORAR PARA FICAR MUITO MELHOR
+            string_and = ''
+            string_or = ''
+            pattern = 'Q(name__icontains='
+            for index, value in enumerate(and_list):
+                string_and += pattern + '"' + value + '"' + ')'
+                if index + 1 != len(and_list):
+                    string_and += ' & '
+                
+            for index, value in enumerate(or_list):
+                string_or += pattern + '"' + value + '"' + ')'
+                if index + 1 != len(or_list):
+                    string_or += ' | '
+            final_string = string_and + " | " + string_or
+            if not is_list_empty(and_list) and  is_list_empty(or_list):
+                final_string = string_and
+            elif is_list_empty(and_list) and  not is_list_empty(or_list):
+                final_string = string_or
+            items = Building.objects.filter(eval(final_string)).order_by('number', 'name')
+    return render(request, 'buildings/home.html', {'items': items})
+
+
 def new(request):
-    #extra_forms = 1  # You can set the initial number of forms here
-    #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
     if request.method == 'POST':    # Newly filled form
         form = BuildingForm(request.POST or None)
@@ -45,10 +98,7 @@ def new(request):
             try:
                 b2.save()
             except IntegrityError as e:
-                #messages.add_message(request, messages.ERROR, 'There has been an error...')
                 form.add_error('number', 'Building number must be unique!')
-                #context = {'form': form}
-                #return render(request, 'categories/new.html', context)
 
     else: # Empty new form
         form = BuildingForm(prefix='new')
@@ -56,10 +106,8 @@ def new(request):
     context = {'form': form}
     return render(request, 'buildings/new_or_edit.html', context)
 
-@login_required
+
 def edit(request, pk=None):
-    #extra_forms = 1  # You can set the initial number of forms here
-    #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
     if request.method == 'POST':    # Newly filled form
         form = BuildingForm(request.POST or None)
