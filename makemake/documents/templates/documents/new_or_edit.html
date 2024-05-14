@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<span><a href="{% url 'home-documents' numproject %}">[DOCUMENTS]</a></span>
+<h1>Edit DOCUMENT FORM</h1>
+<form action="." method="post">
+    {% csrf_token %}
+    <div class="container-fluid">
+        <form class="form-horizontal" role="form" method="post" id="project-form">
+            {{ form.as_p }}
+            <input id="send-form" type="submit" value="Submit" class="btn btn-primary" onclick="removeDisabled()">
+        </form>
+            
+    </div> <!-- FLUID -->
+</form>
+<script>
+    function removeDisabled() {
+        document.getElementById("id_building").removeAttribute("disabled");
+        document.getElementById("id_categories").removeAttribute("disabled");
+    }
+</script>
+{% endblock %}

@@ -86,7 +86,9 @@ class ProjectForm(forms.Form):
                                                             'cols': 100,
                                                             'style': 'resize:none',
                                                             'class': 'form-control form-control-sm',
-                                                            }))
+                                                            }),
+                                    required=False,
+                                    )
     site = forms.ModelChoiceField(
             queryset=Site.objects.all(),
             required=True,

@@ -29,18 +29,21 @@ class DocumentForm2(forms.Form):
                                  widget=forms.DateInput(attrs={'name': 'created_at',
                                                                'type': 'date',
                                                                'class': 'form-control form-control-sm',
+                                                               'readonly': 'true',
                                                                }))
     updated_at = forms.DateField(label='Updated date',
                                  widget=forms.DateInput(attrs={'name': 'updated_at',
                                                                'type': 'date',
-                                                               'class': 'form-control form-control-sm'}))
+                                                               'class': 'form-control form-control-sm',
+                                                               'readonly': 'true'}))
     doctype = ChoiceField(choices=FILE_EXTENSION_CHOICES, required=True, label="Document type", widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
     building = ModelChoiceField(queryset=Building.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
     categories = ModelChoiceField(queryset=Category.objects.all(), required=True, widget=forms.Select(attrs={'class': 'form-select form-select-sm'}))
     
     def __init__(self, *args, **kwargs):
-        value = kwargs.pop('project_number', None)
+        value = kwargs.pop('numproject', None)
         string = kwargs.pop('prefix', None)
+        instance = kwargs.pop('instance', None)
         self.id_building = kwargs.pop('building', None)
         super(DocumentForm2, self).__init__(*args, **kwargs)
         if string == 'new':
@@ -48,10 +51,17 @@ class DocumentForm2(forms.Form):
             self.fields['categories'].queryset = Category.objects.all()
             self.fields['created_at'].initial = datetime.today()
             self.fields['updated_at'].initial = datetime.today()
-        elif string == 'repost':
-            # Enabled fields
-            self.fields['created_at'].readonly = False
-            self.fields['updated_at'].readonly = False
+        elif string == 'edit':
+            self.fields['summary'].initial = instance.summary
+            self.fields['description'].initial = instance.description
+            self.fields['building'].initial = instance.building.id
+            self.fields['categories'].initial = instance.categories
+            self.fields['created_at'].initial = instance.created_at
+            self.fields['updated_at'].initial = datetime.today()
+            self.fields['doctype'].initial = instance.doctype
+            self.fields['building'].disabled = True
+            self.fields['categories'].disabled = True
+            
 
 class VersionForm(forms.Form):
     version_number = forms.IntegerField(label='Version',

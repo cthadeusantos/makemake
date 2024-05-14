@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-    <span><a href="{% url 'home-documents' project_number %}">[DOCUMENTS]</a></span>
+    <span><a href="{% url 'home-documents' numproject %}">[DOCUMENTS]</a></span>
     <H1>Document details</H1>
     <p>{{ document.version_number }}</p>
     <p>{{ document.summary }}</p>
@@ -20,10 +22,12 @@
 
     <br>
     {% for version in versions %}
+    <div>
         {{ version.version_number }}
-        {{ version.upload_url.name|cut:'remove/trailing/dirs/' }}
-        <a href="{% url 'download-version-file' version.id %}"><button class="btn btn-primary btn-sm mr-3">Download</button></a>
-        <br>
+        {{ version.upload_url.name }}
+        {{ version.upload_at }}
+        <button type="button" class="btn-sm btn-secondary"><a href="{% url 'download-version-file' version.id %}"><img src="{% static "images/download.svg" %}" alt="download" title="Download"></a></button>
+    </div>
     {% endfor %}
 
 {% endblock %}

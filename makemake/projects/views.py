@@ -193,8 +193,7 @@ def get_select_users(request):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
-@login_required
-def new(request, project_number=None):
+def new(request, numproject=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
@@ -265,11 +264,10 @@ def new(request, project_number=None):
     else: # Empty new form
         project_form = ProjectForm(prefix='new')
 
-    context = {'project_form': project_form, 'project_number': project_number}
+    context = {'project_form': project_form, 'numproject': numproject}
     return render(request, 'projects/new.html', context)
 
-@login_required
-def new2(request, project_number=None):
+def new2(request, numproject=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
@@ -353,12 +351,12 @@ def new2(request, project_number=None):
     else: # Empty new form
         project_form = ProjectForm(prefix='new')
 
-    context = {'project_form': project_form, 'project_number': project_number}
+    context = {'project_form': project_form, 'numproject': numproject}
     return render(request, 'projects/new.html', context)
 
 @login_required
 def edit2(request, pk=None):
-    project_number = pk
+    numproject = pk
     if request.method == 'POST':    # Newly filled form
         project_form = ProjectForm(request.POST, prefix='repost')
         
@@ -446,11 +444,11 @@ def edit2(request, pk=None):
             return render(request, 'projects/details.html', context) # Mesmo código que o método details
 
     else:
-        instance = Project.objects.get(pk=project_number)
+        instance = Project.objects.get(pk=numproject)
         project_form = ProjectForm(instance=instance, prefix='edit')
     
-    project_profile = Project.objects.get(pk=project_number)
-    #project_form = ProjectForm(instance=project_profile, pk=project_number)
+    project_profile = Project.objects.get(pk=numproject)
+    #project_form = ProjectForm(instance=project_profile, pk=numproject)
     members_formset = set_MembersFormSet(project_profile)
     stakeholders_formset = set_stakeholders_formset(project_profile)
     
@@ -462,14 +460,14 @@ def edit2(request, pk=None):
     for form in buildings_formset.forms:
         form.fields['building'].queryset = queryset
 
-    context = {'project_form': project_form, 'project_number': project_number,
+    context = {'project_form': project_form, 'numproject': numproject,
                'buildings_formset': buildings_formset, 'members_formset': members_formset,
                'stakeholders_formset': stakeholders_formset,}
     return render(request, 'projects/edit.html', context)
 
 @login_required
 def edit(request, pk=None):
-    project_number = pk
+    numproject = pk
     extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
@@ -480,7 +478,7 @@ def edit(request, pk=None):
 
         # Consulta para obter os prédios que pertencem ao site e não estão associados ao projeto
         # Evita inserção de dados repetidos
-        project_profile = Project.objects.get(pk=project_number)
+        project_profile = Project.objects.get(pk=numproject)
         siteID = project_profile.buildings.first().site.id
         buildings_query = Building.objects.filter(site_id=siteID)
         inner_queryset = Project.objects.filter(Q(id=pk)&Q(buildings__site=siteID))
@@ -551,10 +549,10 @@ def edit(request, pk=None):
                     keys.add(value)
                     b2.stakeholders.add(User.objects.get(pk=value))
 
-    project_profile = Project.objects.get(pk=project_number)
+    project_profile = Project.objects.get(pk=numproject)
     #members = project_profile.members.all()
     #stackholders = project_profile.members.all()
-    project_form = ProjectForm2(instance=project_profile, pk=project_number)
+    project_form = ProjectForm2(instance=project_profile, pk=numproject)
     members_formset = set_MembersFormSet(project_profile)
     stakeholders_formset = set_stakeholders_formset(project_profile)
     
@@ -567,7 +565,7 @@ def edit(request, pk=None):
         form.fields['building'].queryset = queryset
 
     context = {'project_form': project_form,
-               'project_number': project_number,
+               'numproject': numproject,
                'members_formset': members_formset,
                'stakeholders_formset': stakeholders_formset,
                'buildings_formset': buildings_formset,
