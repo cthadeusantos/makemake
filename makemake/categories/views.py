@@ -170,7 +170,7 @@ def add_or_edit(request, pk=None):
     
                     for key in selected_keys:
                         parentID = request.POST.get(key, '')  # Get the component ID
-                        if parentID is not '':
+                        if parentID != '':
                             b3 = Category.objects.get(pk=parentID)
                             values_list.append(b3)
 
