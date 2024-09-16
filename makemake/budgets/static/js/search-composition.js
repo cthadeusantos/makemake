@@ -38,10 +38,13 @@ function updateDropdown1(data) {
 
         var dataAttributes = {
                 dbtype: item.dbtype,
-                code: item.code
+                code: item.code,
+                unit: item.unit,
         };
 
         // Adiciona os data-atributes
+        // Procurar por material para aprender sobre como e porque isto é feito,
+        // pois aprendi isso aqui com o chatgpt
         for (const [key, value] of Object.entries(dataAttributes || {})) {
             option.setAttribute(`data-${key}`, value);
         }

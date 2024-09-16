@@ -74,7 +74,7 @@ document.getElementById('add-input-button').addEventListener('click', function (
     inputComponent.placeholder = 'Component';
     inputComponent.readOnly = true;
     inputComponent.rows = 1;
-    inputComponent.className = 'w-1/2 flex-1 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
+    inputComponent.className = 'w-7/12 flex-1 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
     
     // Add the select element
     const selectOption = document.createElement('select');
@@ -90,9 +90,17 @@ document.getElementById('add-input-button').addEventListener('click', function (
     inputQty.placeholder = 'Qty';
     inputQty.className = 'w-1/12 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-right';
 
+    const inputUnit = document.createElement('input');
+    inputUnit.type = 'text';
+    inputUnit.id = 'unit-' + inputCounter;
+    inputUnit.name = 'unit-' + inputCounter; // Add name for Django form submission   
+    inputUnit.placeholder = 'Unit';
+    inputUnit.className = 'w-1/12 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-right';
+    inputUnit.disabled = true;
+
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
-    removeButton.className = 'ml-2 h-8 text-sm px-2 py-2 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800';
+    removeButton.className = 'w-1/12 ml-2 h-8 text-sm px-2 py-2 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800';
     removeButton.innerHTML = 'Remove';
     removeButton.addEventListener('click', function () {
         container.removeChild(inputBlock);
@@ -117,6 +125,7 @@ document.getElementById('add-input-button').addEventListener('click', function (
     inputBlock.appendChild(inputComponent);
     inputBlock.appendChild(selectOption); 
     inputBlock.appendChild(inputQty);
+    inputBlock.appendChild(inputUnit);
     inputBlock.appendChild(removeButton);
     container.appendChild(inputBlock);
 
@@ -127,6 +136,7 @@ document.getElementById('add-input-button').addEventListener('click', function (
     document.getElementById(inputCode.id).value = dataAttributes['data-code'];
     document.getElementById(inputComponent.id).value = selectedOption.textContent;
     document.getElementById(inputQty.id).value = "1.00";
+    document.getElementById(inputUnit.id).value = dataAttributes['data-unit'];
 
     inputCounter++;
     inputBlockCounter++;

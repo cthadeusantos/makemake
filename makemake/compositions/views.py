@@ -222,8 +222,14 @@ def search_components(request):
             final_string = string_or
     query = final_string
     if query:
-        results = Composition.objects.filter(eval(final_string)).values('id', 'code', 'dbtype', 'description', 'iscomposition')
-        results = [{'id': result['id'], 'description': result['description'], 'code': result['code'], 'dbtype': result['dbtype'], 'iscomposition': result['iscomposition']} for result in results]
+        results = Composition.objects.filter(eval(final_string)).values('id', 'code', 'dbtype', 'description', 'iscomposition', 'unit__symbol')
+        results = [{'id': result['id'],
+                    'description': result['description'],
+                    'code': result['code'],
+                    'dbtype': result['dbtype'],
+                    'iscomposition': result['iscomposition'],
+                    'unit': result['unit__symbol'],
+                    } for result in results]
         return JsonResponse(results, safe=False)
     return JsonResponse([], safe=False)
 
