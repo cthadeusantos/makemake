@@ -111,8 +111,11 @@
                     <!-- <img src="https://source.unsplash.com/uJ8LNVCBjFQ/400x400"> -->
                     {{ user.username }}
                 </button>
+                <!-- z-50 especifico do tailwinds, garante que
+                 o elemento sempre ficará na frente
+                 de qualquer outro na tela -->
                 <button x-show="isOpen" @click="isOpen = false" class="h-full w-full fixed inset-0 cursor-default"></button>
-                <div x-show="isOpen" class="absolute w-32 bg-white rounded-lg shadow-lg py-2 mt-16">
+                <div x-show="isOpen" class="z-50 absolute w-32 bg-white rounded-lg shadow-lg py-2 mt-16">
                     <a href="#" class="block px-4 py-2 account-link hover:text-white">Account</a>
                     <a href="#" class="block px-4 py-2 account-link hover:text-white">Support</a>
                     <a href="{% url 'logout' %}" class="block px-4 py-2 account-link hover:text-white">Sign Out</a>
