@@ -17,7 +17,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
 
-from makemake.budgets.models import Price, PriceLabel
+from makemake.prices.models import Price, PriceLabel
 from makemake.compositions.models import Composition, CompositionHasComponents
 
 from makemake.compositions.forms import CompositionForm, ComponentForm, CompositionPriceFormSet
@@ -192,13 +192,15 @@ def search_components(request):
     input_text = request.GET.get('q', '')
     and_list, or_list = separar_valores_sem_espaco(input_text)
     if is_list_empty(and_list) and is_list_empty(or_list):
-        final_string = 'Q(description__icontains=input_text)'
+        input_text = input_text.strip()
+        final_string = 'Q(description__icontains=' + input_text + ')'
         #items = Composition.objects.filter(Q(description__icontains=input_text)).values('id', 'description', 'dbtype')
         #results = items
         #results = [{'value': result['id'], 'text': result['description'], 'dbtype': result['dbtype']} for result in results]
         #return JsonResponse(results, safe=False)
     elif len(and_list) == 1 and is_list_empty(or_list) and re.match(regex2, input_text):
-        final_string = 'Q(code=input_text)'
+        input_text = input_text.strip()
+        final_string = 'Q(code=' + input_text + ')'
         #items = Composition.objects.filter(code=input_text).values('id', 'description', 'dbtype')
         #results = items
         #results = [{'value': result['id'], 'text': result['description'], 'dbtype': result['dbtype']} for result in results]

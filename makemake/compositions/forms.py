@@ -16,7 +16,7 @@ from makemake.projects.models import Project
 from makemake.buildings.models import Building
 from makemake.units.models import Unit
 from makemake.compositions.models import Composition
-from makemake.budgets.models import PriceLabel, Price
+from makemake.prices.models import PriceLabel, Price
 
 from makemake.core.choices import PROJECT_STATUS_CHOICES, TYPE_COMPOSITION_CHOICES, BUDGETS_DATABASES_CHOICES, PRICE_TYPE_CHOICES, PLACES_CHOICES
 from makemake.core.tailwind_classes import *
@@ -165,19 +165,12 @@ class ComponentForm(forms.Form):
                                              }))
 
 class CompositionPriceForm(forms.Form):
-    #label = forms.ModelChoiceField(queryset=PriceLabel.objects.filter(Q(discontinued=False)).values_list('pk', 'label', flat=True).distinct(),
     label = forms.ModelChoiceField(queryset=PriceLabel.objects.filter(Q(discontinued=False)),
                                    widget=forms.Select(attrs={
                                        'class': 'flex flex-col w-1/4 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
                                         #'disabled': 'disabled',
                                         }),
                                         )
-    # price = forms.DecimalField( max_digits=8,
-    #                             decimal_places=12,
-    #                             widget=forms.NumberInput(
-    #                                 attrs={'class': 'flex flex-col w-1/3 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-right',
-    #                                         }),
-    #                                         )
     price = forms.CharField(required=True,
                         validators=[validate_value],
                         widget=forms.TextInput(attrs={
@@ -200,13 +193,3 @@ class CompositionPriceForm(forms.Form):
 
 # Crie um formset manualmente para o BookForm
 CompositionPriceFormSet = formset_factory(CompositionPriceForm, extra=1,)  # `extra` define o número de formulários extras exibidos
-
-# CompositionPriceFormSetInline = inlineformset_factory(Composition,
-#                                                       Price,
-#                                                       form=forms.ModelForm,
-#                                                       fields=[
-#                                                           'label',
-#                                                           'price'
-#                                                           ],
-#                                                       extra=1,
-#                                                       can_delete=True)

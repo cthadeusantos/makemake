@@ -38,43 +38,56 @@ This application was developed to offer comprehensive control over projects, fro
 
 1. You must need to have Python installed on your computer (I suggest you install from an enviroment manager like conda, virtualenv, pyenv, etc)
 
-2. Install project dependencies from root project and at terminal run
+2. Create an enviroment using virtualenv
+```python3 -m venv .venv```
+(please create your enviroment folders with the names .env, env, .venv or venv)
+
+3. Activate your virtual enviroment
+```source .venv/bin/activate```
+
+4. Install project dependencies from root project and at terminal run
 
 ```pip install -r requirements.txt```
 
-3. At first time you must create you tables (run once) and at root project
+5. Duplicate a env_example file, then rename it to .env
+6. Create a new secret key using secret_key_generator.py (see tools directory)
+
+```python secret_key_generator.py```
+
+7. Using your favorite text editor open .env file
+8. Copy the new secret key for SECRET_KEY option at .env file
+9. Save .env
+10. Move .env for makemake directory (application)
+
+11. At first time you must create you tables (run once) and at root project
 
 > [!CAUTION]
-> Do not run create_tables.sh if you have a virtual environment installed in your project folder. The command **find -type d -name \_\_pycache__ -exec rm -rf {} +;**
-inside **create_tables** will delete essential files in this folder
+> Do not run create_tables.sh if you created the virtual environment with folders with names other than .env, .venv, env, or venv. The command **find -type d -name \_\_pycache__ -exec rm -rf {} +;**
+inside **create_tables** will delete essential files in this folder.
 
 ```cp tools/create_tables.sh .```
 
 ```./create_tables.sh```
 
 During this process the admin account will be created and you must need an e-mail and password when you asked.
-If you skip this step, you need create admin account manually using
+If you skip the step above, you need create admin account manually using
 
 ```python manage.py createsuperuser```
 
-**Extra (trial)**
+**Extra (trial) (optional step)**
 If your are using for trial purpose, you can populate the database, copy populate.py at tools directory to project root directory than run
 
 ```cp tools/create_tables.sh```
 
 ```python populate_full.py```
 
-Atfer tests, recreate the database running command at step 3 (above).
+Atfer tests, recreate the database running command at step 11 (above).
 
 #### Setting your enviroment variables
-1. Duplicate a env_example file, then rename it to .env
-2. Create a new secret key using secret_key_generater.py (see tools directory)
-3. Using your favorite text editor open .env file
-4. Copy the new secret key for SECRET_KEY option at .env file
-5. Change DEBUG option at your convinience, True for development or False for deploy
-6. Set ALLOWED_HOSTS option at your convinience ([please read ALLOWED_HOSTS section from Django website](https://docs.djangoproject.com/en/5.1/ref/settings/))
-7. Save .env
-8. Move .env for makemake directory (application)
+1. Using your favorite text editor open makemake/.env file
+2. Change DEBUG option at your convinience, True for development or False for deploy
+3. Set ALLOWED_HOSTS option at your convinience ([please read ALLOWED_HOSTS section from Django website](https://docs.djangoproject.com/en/5.1/ref/settings/))
+4. Save .env
 
 **ACKNOWLEDGMENTS**
 * HTML template (TailAdmin) - https://free-demo.tailadmin.com/

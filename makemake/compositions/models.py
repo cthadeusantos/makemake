@@ -53,10 +53,8 @@ class Composition(models.Model):
         blank=True,
         )
 
-    #categories = models.ManyToManyField(Category)
     compositions = models.ManyToManyField('Composition', through="CompositionHasComponents", related_name="comps")
     objects = models.Manager()  # The default manager
-    #managers = CompositionManager()  # My custom manager
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['code', 'dbtype'], name='unique_code_table')
@@ -74,7 +72,6 @@ class CompositionHasComponents(models.Model):
         .ForeignKey(Composition,
                     on_delete=models.PROTECT,
                     related_name='slave',)
-    # add_date = models.DateField(default=datetime.now)
     origin = models.SmallIntegerField(
         blank=True,
         null=True,
@@ -89,7 +86,6 @@ class CompositionHasComponents(models.Model):
         default=0,
         choices=PRICES_DATABASES_CHOICES,
         )
-    #objects = models.Manager()
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['composition_master', 'composition_slave'], name='unique_code_table_hascomponent')

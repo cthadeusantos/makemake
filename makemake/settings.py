@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'makemake.budgets',
     'makemake.units',
     'makemake.compositions',
+    'makemake.prices',
 ]
 
 MIDDLEWARE = [
