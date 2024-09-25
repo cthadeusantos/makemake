@@ -10,7 +10,7 @@ from makemake.compositions.models import Composition
 class PriceLabel(models.Model):
     reference = models.DateField(default=date.today, editable=True, blank=False, null=True,)
     date = models.DateField(default=date.today, editable=True, blank=False, null=True,)
-    name = models.TextField(default="")
+    name = models.TextField(default="", unique=True)
     discontinued = models.BooleanField(blank=True, default=False,)
 
     def __str__(self) -> str:

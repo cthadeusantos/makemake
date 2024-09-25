@@ -47,27 +47,36 @@
             </div> {% endcomment %}
             <div>
                 <a href="#" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item" onclick="toggleSubmenu('administration-submenu')">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <i class="fas fa-bars mr-3"></i>
                     Administration
                 </a>
                 <div id="administration-submenu" class="hidden ml-12">
-                    <a href="{% url 'home-buildings' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Buildings</a>
-                    <a href="{% url 'home-categories' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Categories</a>
-                    <a href="{% url 'home-companies' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Companies</a>
-                    <a href="{% url 'home-sites' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Sites</a>
-                    <a href="{% url 'home-units' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Units</a>
-                    <a href="{% url 'home-compositions' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Compositions</a>
-                    <a href="{% url 'home-prices' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Prices</a>
+                    <a href="{% url 'home-buildings' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Buildings</a>
+                    <a href="{% url 'home-categories' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Categories</a>
+                    <a href="{% url 'home-companies' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Companies</a>
+                    <a href="{% url 'home-sites' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Sites</a>
+                    <a href="{% url 'home-units' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Units</a>
+                    <a href="{% url 'home-compositions' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Compositions</a>
+                    <a href="#" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-1 nav-item" onclick="toggleSubmenu('dashboard-submenu')">
+                        <i class="fas fa-bars mr-3"></i>
+                        Prices
+                    </a>
+                    <div id="dashboard-submenu" class="hidden ml-12">
+                        <a href="{% url 'home-prices' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Prices</a>
+                        <a href="{% url 'home-references' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">References</a>
+                        <a href="{% url 'new-price' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">New prices</a>
+                        <a href="#" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Import</a>
+                    </div>
                 </div>
             </div>
             <div>
                 <a href="#" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item" onclick="toggleSubmenu('projects-submenu')">
-                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    <i class="fas fa-bars mr-3"></i>
                     Projects
                 </a>
                 <div id="projects-submenu" class="hidden ml-12">
-                    <a href="{% url 'home-projects' %}" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Projects</a>
-                    <a href="#" class="block py-2 pl-6 text-white opacity-75 hover:opacity-100">Subitem 2</a>
+                    <a href="{% url 'home-projects' %}" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Projects</a>
+                    <a href="#" class="block py-2 pl-1 text-white opacity-75 hover:opacity-100">Subitem 2</a>
                 </div>
             </div>
             <!-- <a href="blank.html" class="flex items-center active-nav-link text-white py-4 pl-6 nav-item"> -->

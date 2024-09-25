@@ -27,31 +27,6 @@
 {% endblock %}
 
 {% block content %}
-<script>
-  function addForm() {
-      const formsetDiv = document.getElementById('formset');
-      const totalForms = document.getElementById('id_form-TOTAL_FORMS');
-      const currentFormCount = formsetDiv.children.length;
-      const newFormCount = parseInt(totalForms.value);
-
-      // Clone the empty form
-      const newForm = formsetDiv.children[0].cloneNode(true);
-      newForm.innerHTML = newForm.innerHTML.replace(/form-\d+-/g, `form-${newFormCount}-`);
-
-      // Clear the input value
-      const inputs = newForm.getElementsByTagName('input');
-      for (let i = 0; i < inputs.length; i++) {
-          inputs[i].value = '';
-      }
-
-      // Append the new form
-      formsetDiv.appendChild(newForm);
-
-      // Update the number of total forms
-      totalForms.value = newFormCount + 1;
-  }
-</script>
-
   <span class="bg-blue-500 text-white font-bold py-1 px-2 w-full rounded-full mt-4 flex items-center justify-center">
     {{ composition.description }}
   </span>
@@ -75,6 +50,7 @@
             </button>
           </div>
         {% endfor %}
+        <span id="putselecthere"></span>
         <input id="send-form" type="submit" value="Submit" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
       </div>
 </form>
@@ -139,12 +115,21 @@
     </div>
   </div>
 
+<!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> -->
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/addForm-components.js' %}"></script>
+
 <!-- AlpineJS -->
-<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+<!-- <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script> -->
+<!-- <script src="{% static 'js/alpine.min.js' %}" defer></script> -->
+
 <!-- Font Awesome -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script> -->
+<!-- <script src="{% static 'js/all.min.js' %}" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script> --> -->
+
 <!-- ChartJS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script> -->
+<script src="{% static 'js/Chart.min.js' %}" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
 
 {{ grafico|safe }}
 <p style="font-size:0.775em">module: compositions-prices_compositions-2024.09</p>

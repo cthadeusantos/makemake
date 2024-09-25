@@ -33,7 +33,7 @@ document.getElementById('add-input-button').addEventListener('click', function (
     });
     //Verificar se o valor do novo select já existe
     for (let i = 0; i < elementsWithIdX.length; i++) {
-        if (elementsWithIdX[i].value == selectedOption.value) {
+        if (elementsWithIdX[i].value == dataAttributes['data-code']) {
             alert('The element exist!');
             return; // Interrompe a criação do novo elemento
         }
@@ -62,8 +62,8 @@ document.getElementById('add-input-button').addEventListener('click', function (
 
     const inputCode = document.createElement('input');
     inputCode.type = 'text';
-    inputCode.id = 'code-' + inputCounter;
-    inputCode.name = 'code-' + inputCounter ; // Add name for Django form submission
+    inputCode.id = 'ID-' + inputCounter;
+    inputCode.name = 'ID-' + inputCounter ; // Add name for Django form submission
     inputCode.placeholder = 'Code';
     inputCode.readOnly = true;
     inputCode.className = 'w-1/12 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';

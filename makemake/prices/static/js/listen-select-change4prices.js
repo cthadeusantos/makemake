@@ -13,7 +13,9 @@ document.addEventListener('change', function(event) {
     // if (elemento.tagName === 'SELECT' && 
     //     elemento.id.startsWith('select-option-') && 
     //     elemento.id !== 'meuID') {
-    if (elemento.id.startsWith('select-option-')) {    
+    
+    // the name of the startWith parameter is the ID of the select to be copied
+    if (elemento.id.startsWith('select-category-')) {    // Change select-category with the select ID
         
         // Atualiza a variável global com o valor selecionado
         valorSelecionadoGlobal = elemento.value;
