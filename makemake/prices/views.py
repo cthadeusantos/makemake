@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 
 from makemake.prices.models import Price, PriceLabel
-from makemake.prices.forms import PriceLabelForm
+from makemake.prices.forms import PriceLabelForm, ImportPricesForm
 
 def home(request):
     return render(request, 'prices/home.html', None)
@@ -58,42 +58,53 @@ def new_reference(request):
 
 def add_or_edit_reference(request, pk=None):
     if request.method == 'POST':    # Newly filled form
+        #instance = PriceLabel.objects.get(pk=pk)
+        #form = PriceLabelForm(request.POST or None, instance=instance)
         form = PriceLabelForm(request.POST or None)
-
-        if form.is_valid() and pk is None:
+        #form.fields['name'].widget.attrs['readonly'] = True
+        if form.is_valid():
             a = form.cleaned_data['name']
             b = form.cleaned_data['reference']
             c = form.cleaned_data['discontinued']
             
-            a = a.lower().capitalize()
+            a = a.upper()
 
             # Logica para gravar instância principal
-            b2 = PriceLabel(name=a, reference=b, discontinued=c, )
-            try:
-                b2.save()
-                form = PriceLabelForm()
-            except IntegrityError as e:
-                #messages.add_message(request, messages.ERROR, 'There has been an error...')
-                form.add_error('name', 'PriceLabel name must be unique!')
-                #context = {'form': form}
-                #return render(request, 'categories/new.html', context)
-        else:
-            #a = form.cleaned_data['name']
-            #b = form.cleaned_data['reference']
-            c = form.cleaned_data['discontinued']
+            if pk is None:
+                b2 = PriceLabel(name=a, reference=b, discontinued=c, )
+                try:
+                    b2.save()
+                    form = PriceLabelForm()
+                except IntegrityError as e:
+                    #messages.add_message(request, messages.ERROR, 'There has been an error...')
+                    form.add_error('name', 'PriceLabel name must be unique!')
+                    #context = {'form': form}
+                    #return render(request, 'categories/new.html', context)
+            else:
+                # Logica para gravar instância principal editada
+                try:
+                    b2 = PriceLabel.objects.filter(pk=pk)
+                    b2.update(name=a, reference=b, discontinued=c,)
+                    form = PriceLabelForm()
+                except IntegrityError:
+                    pass
+        # else:
+        #     #a = form.cleaned_data['name']
+        #     #b = form.cleaned_data['reference']
+        #     c = form.cleaned_data['discontinued']
             
-            #a = a.lower().capitalize()
+        #     #a = a.lower().capitalize()
 
-            # Logica para gravar instância principal
-            b2 = PriceLabel(discontinued=c, )
-            #try:
-            b2.save()
-            form = PriceLabelForm()
-            #except IntegrityError as e:
-                #messages.add_message(request, messages.ERROR, 'There has been an error...')
-                #form.add_error('name', 'PriceLabel name must be unique!')
-                #context = {'form': form}
-                #return render(request, 'categories/new.html', context)
+        #     # Logica para gravar instância principal
+        #     b2 = PriceLabel(discontinued=c, )
+        #     #try:
+        #     b2.save()
+        #     form = PriceLabelForm()
+        #     #except IntegrityError as e:
+        #         #messages.add_message(request, messages.ERROR, 'There has been an error...')
+        #         #form.add_error('name', 'PriceLabel name must be unique!')
+        #         #context = {'form': form}
+        #         #return render(request, 'categories/new.html', context)
 
 
     else: # Empty new form
@@ -114,3 +125,11 @@ def delete_reference(request, pk):
         message = "The register couldn't be deleted!"
         messages.info(request, message)
     return home_references(request)
+
+def ImportPrices(request):
+    if request.method == 'POST':    # Newly filled form
+        pass
+    else:
+        form = ImportPricesForm()
+    context = {'form': form}
+    return render(request, 'prices/imports.html', context)

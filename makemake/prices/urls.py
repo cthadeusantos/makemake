@@ -12,4 +12,5 @@ urlpatterns = [
     path('delete/<int:pk>/', delete_reference, name='delete-reference'),
     #path('edit/<int:pk>/', edit, name='edit-unit'),
     path('search-prices-labels/', search_prices_labels, name='search-prices-labels'),
+    path('imports/', ImportPrices, name='import-prices'),
 ]

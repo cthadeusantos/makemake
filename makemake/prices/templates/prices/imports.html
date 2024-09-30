@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block topmenu%}
 <!-- This is an example component -->
 <div class="grid min-h-[140px] w-full place-items-left overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
@@ -10,7 +9,7 @@
       <button
         class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
         type="button">
-        <a href="{% url 'home-categories' %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-categories" title="home categories"></a>
+        <a href="{% url 'home-companies' %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-companies" title="home companies"></a>
       </button>
       <!--
       <button
@@ -38,50 +37,19 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New category</title>
+<title>Company</title>
 <!-- <script src="https://unpkg.com/htmx.org@1.6.0/dist/htmx.js"></script> -->
 
-<h5>New category</h5>
+<h1>Import prices</h1>
 
      <div class="container mx-auto px-4">
         <form class="mx-auto w-full" role="form" method="post" id="add-form">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    {{ formset.management_form }}
-                            <!-- Pai que conterá os formulários -->
-                            <div id="formset-container">
-                              {% for parent_form in formset %}
-                                <div id="formset-{{ forloop.counter0 }}" class="grid grid-cols-9 gap-4 items-center">
-                                  <!-- Select ocupa 8 colunas (1/9) -->
-                                  <select name="form-INPUT-{{ forloop.counter0 }}" id="form-INPUT-{{ forloop.counter0 }}"
-                                    class="col-span-8 mb-3 block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-                                    <option value="" {% if not parent_form.parent.value %}selected{% endif %}>---------</option>
-                                    {% for option in parent_form.parent.field.queryset %}
-                                      <option value="{{ option.pk }}" {% if option.pk == parent_form.parent.value %}selected{% endif %}>
-                                        {{ option.name }}
-                                      </option>
-                                    {% endfor %}
-                                  </select>
-                            
-                                  <!-- Botão ocupa 1 coluna (1/10) -->
-                                  <button type="button" class="col-span-1 remove-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                    onclick="removeFormSet('{{ forloop.counter0 }}')">
-                                    -
-                                  </button>
-                                </div>
-                              {% endfor %}
-                            </div>
-                            
-                          <button type="button" onclick="addFormSetCategory()" class="ml-2 h-8 text-sm px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                            <img src="{% static 'images/plus.svg' %}" alt="Dropdown Arrow" class="w-4 h-4 text-gray-700 dark:text-white">
-                        </button>
                     <input id="send-form" type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 </form>
             
     </div> <!-- FLUID -->
+    <p style="font-size:0.775em">module: prices-import_prices-2024.09</p>
 
-    <script src="{% static 'js/category.js' %}"></script>
-
-    <p style="font-size:0.775em">module: categories-new_or_edit-2024.09</p>
-    
 {% endblock %}

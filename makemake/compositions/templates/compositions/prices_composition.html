@@ -36,7 +36,7 @@
 
         {{ formset.management_form }}
         {% for form in formset %}
-          <div class="form-row flex">
+          <div id='inlineformset' class="form-row flex">
               {{ form.label }}
               <span class="text-xs text-red-500">{{ form.label.errors }}</span>
               {{ form.burdened }}
@@ -45,12 +45,12 @@
               <span class="text-xs text-red-500">{{ form.place.errors }}</span>
               {{ form.price }}
               <span class="text-xs text-red-500">{{ form.price.errors }}</span>
-            <button type="button" onclick="addForm()" class="ml-2 h-8 text-sm px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-              <img src="{% static 'images/plus.svg' %}" alt="Dropdown Arrow" class="w-4 h-4 text-gray-700 dark:text-white">
-            </button>
           </div>
         {% endfor %}
         <span id="putselecthere"></span>
+        <button type="button" onclick="addForm()" class="ml-2 h-8 text-sm px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+          <img src="{% static 'images/plus.svg' %}" alt="Dropdown Arrow" class="w-4 h-4 text-gray-700 dark:text-white">
+        </button>
         <input id="send-form" type="submit" value="Submit" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
       </div>
 </form>
@@ -125,7 +125,7 @@
 
 <!-- Font Awesome -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script> -->
-<!-- <script src="{% static 'js/all.min.js' %}" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script> --> -->
+<!-- <script src="{% static 'js/all.min.js' %}" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script> -->
 
 <!-- ChartJS -->
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script> -->
