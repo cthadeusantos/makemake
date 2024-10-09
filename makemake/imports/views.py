@@ -1,54 +1,10 @@
 import re
 import csv
 import chardet
+from django.db import IntegrityError
 from django.shortcuts import render
 from makemake.imports.forms import *
 
-# Read .csv file
-def ler_csv_tab_delimitado(caminho_arquivo):
-    """
-    Lê um arquivo .csv separado por tabulação e retorna o conteúdo como uma lista de dicionários.
-    
-    Parâmetros:
-    caminho_arquivo (str): O caminho para o arquivo .csv.
-
-    Retorna:
-    List[Dict[str, str]]: Uma lista de dicionários, onde cada dicionário representa uma linha do arquivo.
-    """
-    with open(caminho_arquivo, newline='', encoding='utf-8') as csvfile:
-        leitor = csv.DictReader(csvfile, delimiter='\t')
-        dados = [linha for linha in leitor]
-    return dados
-
-def ler_csv_tab(file_path, delimiter='\t'):
-    """
-    Lê um arquivo CSV separado por tabulação e retorna uma tabela (lista de listas).
-
-    Args:
-    file_path (str): O caminho do arquivo CSV a ser lido.
-
-    Returns:
-    list: Uma lista de listas onde cada sublista representa uma linha do arquivo.
-    """
-    tabela = []
-
-    # Avoid character u'\ufeff' , use encoding='utf-8-sig' not encoding='utf-8'
-    try:
-        with open(file_path, 'r', encoding='utf-8-sig') as file:
-            for line in file:
-                # Remove a nova linha e divide por tabulação
-                linha = line.strip().split(delimiter)
-                #linha = line.strip().split('|')
-                tabela.append(linha)
-    except UnicodeDecodeError:
-        with open(file_path, 'r', encoding='utf-16') as file:
-            for line in file:
-                # Remove a nova linha e divide por tabulação
-                linha = line.strip().split(delimiter)
-                #linha = line.strip().split('|')
-                tabela.append(linha)
-    
-    return tabela
 
 def processar_string(texto):
     """
@@ -89,7 +45,12 @@ def origin_func(item):
     else:
         return 0
 
-# Create your views here.
+def import_sinapi_file():
+    pass
+
+# Import compositions .csv files
+# input : A .csv file
+# output : ?? To define 
 def icompositions(request):
     if request.method == 'POST':
         form = ImportPricesForm(request.POST, request.FILES)
@@ -100,9 +61,8 @@ def icompositions(request):
             # Certifique-se de que o arquivo é de texto
             if uploaded_file.content_type == 'text/plain':
                 # Lendo o conteúdo do arquivo
-                #content = uploaded_file.read().decode('utf-8')  # Decodifique o conteúdo para string
-                # Detectando a codificação do arquivo
                 raw_data = uploaded_file.read()
+                # Detectando a codificação do arquivo
                 result = chardet.detect(raw_data)
                 encoding = result['encoding']
                 
@@ -112,9 +72,30 @@ def icompositions(request):
                 # Lendo o arquivo CSV com a codificação detectada
                 decoded_file = raw_data.decode(encoding)
 
+                # Usando csv.reader para processar o arquivo CSV
+                items = csv.reader(decoded_file.splitlines())
+
                 # Aqui você pode processar o conteúdo como desejar
                 # Exemplo: quebrar em linhas
-                lines = content.splitlines()
+                #lines = content.splitlines()
+                print("Inserting materials at composition table")
+                for item in items:
+                        delimiter = '\t'
+                        # Remove a nova linha e divide por tabulação
+                        line = item[0].strip().split(delimiter)
+                        if len(line) < 5:
+                            continue
+                        CODE = line[0].replace("'",'')
+                        TEXT = clean_text(line[1])
+                        UNIT = line[2].strip()
+                        value = processar_string(line[2])
+                        try:
+                            # instance_unit = Unit.objects.get(symbol__iexact=value.lower())
+                            # instance = Composition(code=CODE, dbtype=2, description=TEXT, type=1, unit=instance_unit)
+                            # instance.save()
+                            print(CODE, TEXT, UNIT, value)
+                        except IntegrityError:
+                            pass
                 
                 # Retornar as linhas para o template, por exemplo
                 return render(request, 'file_processed.html', {'lines': lines})
