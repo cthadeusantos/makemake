@@ -37,6 +37,7 @@ urlpatterns = [
     path('budgets/', include('makemake.budgets.urls')),
     path('units/', include('makemake.units.urls')),
     path('prices/', include('makemake.prices.urls')),
+    path('imports/', include('makemake.imports.urls')),
     #path('documents/', makemake.documents.views.home),
     #path('documents/new/', makemake.documents.views.new),
     path('admin/', admin.site.urls),

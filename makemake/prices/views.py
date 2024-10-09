@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.contrib import messages
 
 from makemake.prices.models import Price, PriceLabel
-from makemake.prices.forms import PriceLabelForm, ImportPricesForm
+from makemake.prices.forms import PriceLabelForm
 
 def home(request):
     return render(request, 'prices/home.html', None)
@@ -125,11 +125,3 @@ def delete_reference(request, pk):
         message = "The register couldn't be deleted!"
         messages.info(request, message)
     return home_references(request)
-
-def ImportPrices(request):
-    if request.method == 'POST':    # Newly filled form
-        pass
-    else:
-        form = ImportPricesForm()
-    context = {'form': form}
-    return render(request, 'prices/imports.html', context)

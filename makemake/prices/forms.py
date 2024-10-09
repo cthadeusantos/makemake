@@ -99,28 +99,3 @@ class PriceForm(forms.Form):
         self.fields['date'].initial = today_is
         
 PriceFormset = formset_factory(form=PriceForm, extra=1,)
-
-class ImportPricesForm(forms.Form):
-    date = forms.DateField(label='Date',
-                            widget=forms.DateInput(attrs={'type': 'date',
-                                                          'class': CSS_CHARFIELD_1,
-                                                          'readonly': 'true',
-                                                          }))
-    place = ChoiceField(label='Place',
-                            choices=PLACES_CHOICES,
-                            required=False,
-                            widget=forms.Select(attrs={'class': CSS_SELECT_1}))
-    burdened = forms.BooleanField(label='Burdened',
-                                  widget=forms.CheckboxInput(
-                                      attrs={'class': 'form-checkbox mb-3 h-4 w-4 text-blue-600'}),
-                                      required=False)
-    upload_url = forms.FileField(label='File',
-                                 widget=forms.FileInput(attrs={'name': 'file',
-                                                               'readonly': 'true',
-                                                               'class': CSS_SELECT_1,
-                                                               }))
-        
-    def __init__(self, *args, **kwargs):
-        super(ImportPricesForm, self).__init__(*args, **kwargs)
-        today_is = datetime.today
-        self.fields['date'].initial = today_is

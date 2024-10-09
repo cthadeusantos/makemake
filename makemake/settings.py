@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'makemake.units',
     'makemake.compositions',
     'makemake.prices',
+    'makemake.imports',
 ]
 
 MIDDLEWARE = [
