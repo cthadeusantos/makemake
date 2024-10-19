@@ -367,11 +367,13 @@ def new(request):
             b1 = Composition(code=a, description=b, unit=c, type=d, iscomposition=e, dbtype=f, discontinued=g, created_at=h, updated_at=i,)
             try:
                 # Usar expressão regular para selecionar as chaves desejadas
-                selected_keys = [chave for chave in chaves if re.match(r'(ID|quantity|select-option)-\d+', chave)]
+                # Não esta otimizado, mas como são poucos elementos não faz muita diferença
+                #selected_keys = [chave for chave in chaves if re.match(r'(ID|quantity|select-option|component|code|dbtype)-\d+', chave)]
+                selected_keys = [chave for chave in chaves if re.match(r'(id|quantity|select-option)-\d+', chave)]
                 values_list = []
                 
                 # Read values from HTML template
-                for item in range(0, len(selected_keys), 3):
+                for item in range(0, len(selected_keys), 3): # Número de elementos varia de acordo com os elementos em re.match(r'(id|quantity|select-option|component|code|dbtype)-\d+'
                     value = selected_keys[item]
                     key = int(request.POST.get(value, ''))  # Get the component ID
                     value = selected_keys[item + 1]
@@ -409,18 +411,19 @@ def edit(request, pk=None):
         keys = request.POST.keys()    # Seleciona todas as chaves de request.POST
 
         # Usar expressão regular para selecionar as chaves desejadas (code component)
-        pattern = re.compile(r'(\b(id|code|origin|quantity|select-option|qty)-\d+|\d+-(id|code|origin|quantity|select-option|qty)\b)')
+        #pattern = re.compile(r'(\b(id|code|origin|quantity|select-option|qty)-\d+|\d+-(id|code|origin|quantity|select-option|qty)\b)')
+        #pattern = re.compile(r'(\b(id|code|origin|quantity|select-option|qty|dbtype)-\d+|\d+-(id|code|origin|quantity|select-option|qty|dbtype)\b)')
+        pattern = re.compile(r'(\b(id|origin|quantity|select-option|qty)-\d+|\d+-(id|origin|quantity|select-option|qty)\b)')
         selected_keys = [key for key in keys if pattern.match(key)]
-
         components_dict = {}
         component_tuple = ()
         for index, value in enumerate(selected_keys):
             value = request.POST.get(value,'')
-            if not (index % 4):
+            if not (index % 3):
                 id = value
             else:
                 component_tuple += (value,)
-            if index > 0 and not ((index+1) % 4):
+            if index > 0 and not(index % int(index / 3) + 1):
                 components_dict[id] = component_tuple
                 component_tuple = ()          
         #set_one = {tupla[0] for tupla in components_dict.values()}
@@ -462,8 +465,10 @@ def edit(request, pk=None):
             
             # Update components
             for component in components_in_both:
+                value1 = int(float(components_dict[component][1].replace(',','.')))
+                value2 = float(components_dict[component][2].replace(',','.'))
                 b2 = CompositionHasComponents.objects.filter(Q(composition_master=pk) & Q(composition_slave=component))
-                b2.update(origin=components_dict[component][1], quantity=components_dict[component][2])
+                b2.update(origin=value1, quantity=value)
 
             # Which is the master composition
             master = Composition.objects.get(pk=pk)
@@ -471,7 +476,9 @@ def edit(request, pk=None):
             # Add new components
             for component in components_added:
                 slave = Composition.objects.get(pk=component)
-                b2 = CompositionHasComponents(composition_master=master, composition_slave=slave, origin=components_dict[component][1], quantity=components_dict[component][2])
+                value1 = int(float(components_dict[component][1].replace(',','.')))
+                value2 = float(components_dict[component][2].replace(',','.'))
+                b2 = CompositionHasComponents(composition_master=master, composition_slave=slave, origin=value1, quantity=value2)
                 b2.save()
 
             # Mesmo código que o método details

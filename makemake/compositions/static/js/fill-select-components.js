@@ -46,16 +46,20 @@ document.getElementById('add-input-button').addEventListener('click', function (
 
     const inputID = document.createElement('input');
     inputID.type = 'text';
-    inputID.id = 'ID-' + inputCounter;
-    inputID.name = inputCounter + '-id'; // Add name for Django form submission
-    inputID.placeholder = 'ID';
+    //inputID.id = 'ID-' + inputCounter;
+    inputID.id = 'id-' + inputCounter;
+    //inputID.name = inputCounter + '-id'; // Add name for Django form submission
+    inputID.name = 'id-' + inputCounter; // Add name for Django form submission
+    //inputID.placeholder = 'ID';
+    inputID.placeholder = 'id';
     inputID.readOnly = true;
     inputID.className = 'w-1/12 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
 
     const inputDBtype = document.createElement('input');
     inputDBtype.type = 'text';
     inputDBtype.id = 'dbtype-' + inputCounter;
-    inputDBtype.name = inputCounter + '-dbtype'; // Add name for Django form submission
+    //inputDBtype.name = inputCounter + '-dbtype'; // Add name for Django form submission
+    inputDBtype.name = 'dbtype-' + inputCounter; // Add name for Django form submission
     inputDBtype.placeholder = 'DBtype';
     inputDBtype.readOnly = true;
     inputDBtype.className = 'w-1/12 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
@@ -63,14 +67,17 @@ document.getElementById('add-input-button').addEventListener('click', function (
     const inputCode = document.createElement('input');
     inputCode.type = 'text';
     inputCode.id = 'code-' + inputCounter;
-    inputCode.name = inputCounter + '-code'; // Add name for Django form submission
+    //inputCode.name = inputCounter + '-code'; // Add name for Django form submission
+    inputCode.name = 'code-' + inputCounter; // Add name for Django form submission
     inputCode.placeholder = 'Code';
     inputCode.readOnly = true;
     inputCode.className = 'w-1/12 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
 
     const inputComponent = document.createElement('textarea');
-    inputComponent.id = 'component-' + inputCounter;
-    inputComponent.name = inputCounter + 'component'; // Add name for Django form submission   
+    //inputComponent.id = 'component-' + inputCounter;
+    inputComponent.id = 'description-' + inputCounter;
+    //inputComponent.name = inputCounter + 'component'; // Add name for Django form submission   
+    inputComponent.name = 'description-' + inputCounter; // Add name for Django form submission   
     inputComponent.placeholder = 'Component';
     inputComponent.readOnly = true;
     inputComponent.rows = 1;
