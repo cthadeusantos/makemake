@@ -167,79 +167,16 @@ class ProjectForm(forms.Form):
             self.fields['site'].widget.attrs['disabled'] = True
             self.fields['site'].required = 'False'
 
-# class ProjectForm3(forms.ModelForm):
-#     site = forms.ModelChoiceField(queryset=Site.objects.all(),
-#                                   required=True,
-#                                   widget=forms.Select(attrs={'class': 'form-select form-select-sm'}),
-#                                   label='site'
-#                                   )
-#     class Meta:
-#         model = Project
-#         fields = ['code', 'year', 'name', 'description','created_at', 'updated_at', 'project_manager', 'project_manager_support', 'interlocutor', 'site']
-#         widgets = {'code': forms.NumberInput(attrs={'name': 'code', 'class': 'form-control form-control-sm','readonly': 'true',}),
-#                    'year': forms.NumberInput(attrs={'name': 'year', 'class': 'form-control form-control-sm', 'readonly': 'true',}),
-#                    'name': forms.TextInput(attrs={'name': 'name', 'style': 'resize:none', 'class': 'form-control form-control-sm'}),
-#                    'description': forms.Textarea(attrs={'name': 'description', 'rows': 3, 'cols': 100, 'style': 'resize:none', 'class': 'form-control form-control-sm'}),
-#                    'created_at': forms.DateInput(attrs={'name': 'created_at', 'type': 'date', 'class': 'form-control form-control-sm', 'readonly': 'true', }),
-#                    'updated_at': forms.DateInput(attrs={'name': 'updated_at', 'type': 'date', 'readonly': 'true', 'class': 'form-control form-control-sm', }),
-#                    'project_manager': forms.Select(attrs={'class': 'form-select form-select-sm', 'name': 'project_manager'}),
-#                    'project_manager_support': forms.Select(attrs={'class': 'form-select form-select-sm', 'name': 'project_manager_support'}),
-#                    'interlocutor': forms.Textarea(attrs={'name': 'interlocutor', 'rows': 2, 'cols': 100, 'style': 'resize:none', 'class': 'form-control form-control-sm',}),
-#                    }
+# class ProjectBuildingForm(forms.Form):
+#     building = forms.ModelChoiceField(queryset=Building.objects.none(),
+#                                    widget=forms.Select(attrs={
+#                                        'class': 'flex flex-col w-1/4 mr-2 p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+#                                         #'disabled': 'disabled',
+#                                         }),
+#                                         )
 
-#     def __init__(self, *args, **kwargs):
-#         self.declared_fields['site'] = 1
-        
+# ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=1,)  # `extra` define o número de formulários extras exibidos
 
-  
-# class ProjectForm2(forms.ModelForm):
-#     class Meta:
-#         model = Project
-#         fields = ['code', 'year', 'name', 'description','created_at', 'updated_at', 'project_manager', 'project_manager_support', 'interlocutor']
-#         widgets = {'description': forms.Textarea(attrs={'name': 'description',
-#                                                         'rows': 3,
-#                                                         'cols': 100,
-#                                                         'style': 'resize:none'})}
-#         # site = forms.ModelChoiceField(queryset=Site.objects.all(),
-#         #                               to_field_name='name',
-#         #                               label='site',
-#         #                               required=True,
-#         #                               widget=forms.Select(attrs={'class': 'form-control'})
-#         #                               )
-
-
-#     def __init__(self, *args, **kwargs):
-#         pk = kwargs.pop('pk')
-#         super(ProjectForm2, self).__init__(*args, **kwargs)
-#         site_queryset=Site.objects.all()
-#         # self.fields['created_at'].initial = datetime.today
-#         self.fields['created_at'].disabled = True
-#         self.fields['updated_at'].initial = datetime.today
-#         self.fields['updated_at'].disabled = True
-#         self.fields['site'] = forms.ModelChoiceField(queryset=site_queryset,
-#                                       to_field_name='pk',
-#                                       #label='site',
-#                                       required=True,
-#                                       #widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
-#                                       widget=forms.Select(attrs={'class': 'form-select form-select-sm'})
-#                                       )
-#         a_instance = Project.objects.prefetch_related('buildings__site').get(pk=pk)
-#         c_instances = [b_instance.site for b_instance in a_instance.buildings.all()]
-    
-#         # Usando get para obter a instância de A
-#         a_instance = Project.objects.get(pk=pk)
-
-#         # Obtendo todos os elementos da tabela B relacionados com a instância de A
-#         b_instances = a_instance.buildings.all()
-
-#         # Obtendo todos os elementos da tabela B relacionados com a instância de A
-#         d_instances = a_instance.members.all()
-
-#         #site_pk = Site.objects.select_related('project__building').get(pk=1)
-#         site_pk = c_instances[0].id - 1
-#         self.fields['site'].queryset = site_queryset
-#         self.fields['site'].initial = site_queryset[site_pk]
-#         self.fields['site'].widget.attrs['disabled'] = True
 
 class UserForm(forms.Form):
     users = forms.ModelChoiceField(queryset=User.objects.all(),

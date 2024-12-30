@@ -2,39 +2,6 @@ var selectCounterSite = 0;  // Inicializa um contador para IDs únicos
 var selectCounterMember = 0;  // Inicializa um contador para IDs únicos
 var selectCounterStakeholder = 0;  // Inicializa um contador para IDs únicos
 
-//
-// Adiciona novos prédios
-//
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('add-select').addEventListener('click', async function () {
-        try {
-            var siteId = document.getElementById('id_site').value;
-            var data = await fetchData("/projects/get-select-options/" + siteId + "/");
-            //var selectCounterSite = 0;
-
-            // Incrementa o contador para criar IDs únicos
-            selectCounterSite++;
-
-            // Criar um novo select com ID único
-            //var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="form-select form-select-sm" >';
-            var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer" >';
-            for (var i = 0; i < data.options.length; i++) {
-                selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-            }
-            selectHtml += '</select></p>';
-
-            // Adicionar ao contêiner
-            document.getElementById('select-container').insertAdjacentHTML('beforeend', selectHtml);
-
-            // Desabilita botão submit
-            var sendFormButton = document.getElementById('send-form');
-            sendFormButton.disabled = false;
-        } catch (error) {
-            console.log('Erro ao obter opções do select', error);
-        }
-    });
-});
-
 async function fetchData(url) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -113,7 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 // Se não vazio, ativar o botão
-                addSelectButton.disabled = false;
+                //addSelectButton.disabled = false;
+                addSelectButton && (addSelectButton.disabled = false);
+
                 // Ativar o botão após o primeiro select ser adicionado
                 //addSelectButton.removeAttribute('disabled');
             }
@@ -121,67 +90,396 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+//
+// Adiciona novos prédios
+//
+/*
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('add-select').addEventListener('click', async function () {
+        try {
+            var siteId = document.getElementById('id_site').value;
+            var data = await fetchData("/projects/get-select-options/" + siteId + "/");
+            //var selectCounterSite = 0;
+
+            // Incrementa o contador para criar IDs únicos
+            selectCounterSite++;
+
+            // Criar um novo select com ID único
+            //var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="form-select form-select-sm" >';
+            var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer" >';
+            for (var i = 0; i < data.options.length; i++) {
+                selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
+            }
+            selectHtml += '</select></p>';
+
+            // Adicionar ao contêiner
+            document.getElementById('select-container').insertAdjacentHTML('beforeend', selectHtml);
+
+            // Desabilita botão submit
+            var sendFormButton = document.getElementById('send-form');
+            sendFormButton.disabled = false;
+        } catch (error) {
+            console.log('Erro ao obter opções do select', error);
+        }
+    });
+});
+*/
+
+
 
 //
 // Adiciona novos membros
 //
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('add-select-member').addEventListener('click', async function () {
-        try {
-            var data = await fetchData("/projects/get-select-users/");
-            //var selectCounterSite = 0;
+async function addSelectMember() {
+    try {
+        var data = await fetchData("/projects/get-select-users/");
+        //var selectCounterSite = 0;
 
-            // Incrementa o contador para criar IDs únicos
-            selectCounterMember++;
+        // Incrementa o contador para criar IDs únicos
+        selectCounterMember++;
 
-            // Criar um novo select com ID único
-            //var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="form-select form-select-sm">';
-            var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
-            for (var i = 0; i < data.options.length; i++) {
-                selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-            }
-            selectHtml += '</select></p>';
-
-            // Adicionar ao contêiner
-            document.getElementById('select-container-member').insertAdjacentHTML('beforeend', selectHtml);
-
-            // Desabilita botão submit
-            var sendFormButton = document.getElementById('send-form');
-            sendFormButton.disabled = false;
-        } catch (error) {
-            console.log('Erro ao obter opções do select', error);
+        // Criar um novo select com ID único
+        var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
+        for (var i = 0; i < data.options.length; i++) {
+            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
         }
-    });
-});
+        selectHtml += '</select></p>';
+
+        // Adicionar ao contêiner
+        document.getElementById('select-container-member').insertAdjacentHTML('beforeend', selectHtml);
+
+        // Desabilita botão submit
+        var sendFormButton = document.getElementById('send-form');
+        sendFormButton.disabled = false;
+    } catch (error) {
+        console.log('Erro ao obter opções do select', error);
+    }
+}
 
 //
 // Adiciona novos stakeholders
 //
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('add-select-stakeholder').addEventListener('click', async function () {
-        try {
-            var data = await fetchData("/projects/get-select-users/");
-            //var selectCounterSite = 0;
+async function addSelectStakeholder() {
+    try {
+        var data = await fetchData("/projects/get-select-users/");
+        //var selectCounterSite = 0;
 
-            // Incrementa o contador para criar IDs únicos
-            selectCounterStakeholder++;
+        // Incrementa o contador para criar IDs únicos
+        selectCounterStakeholder++;
 
-            // Criar um novo select com ID único
-            //var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="form-select form-select-sm">';
-            var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
-            for (var i = 0; i < data.options.length; i++) {
-                selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-            }
-            selectHtml += '</select></p>';
-
-            // Adicionar ao contêiner
-            document.getElementById('select-container-stakeholder').insertAdjacentHTML('beforeend', selectHtml);
-
-            // Desabilita botão submit
-            var sendFormButton = document.getElementById('send-form');
-            sendFormButton.disabled = false;
-        } catch (error) {
-            console.log('Erro ao obter opções do select', error);
+        // Criar um novo select com ID único
+        var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
+        for (var i = 0; i < data.options.length; i++) {
+            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
         }
-    });
+        selectHtml += '</select></p>';
+
+        // Adicionar ao contêiner
+        document.getElementById('select-container-stakeholder').insertAdjacentHTML('beforeend', selectHtml);
+
+        // Desabilita botão submit
+        var sendFormButton = document.getElementById('send-form');
+        sendFormButton.disabled = false;
+    } catch (error) {
+        console.log('Erro ao obter opções do select', error);
+    }
+}
+
+// Função para adicionar novo formset
+function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, formsetNum, type) {
+    e.preventDefault();
+
+
+    // Verificar se formsetContainer[0] não existe
+    // NEW sendo executado
+    if (formsetContainer[0] === undefined){
+
+        switch (type){
+            //
+            // Adiciona novos prédios
+            //
+            case 'building':
+                (async function handleDynamicSelect() {
+                    try {
+                        // Obtém o ID do site
+                        var siteId = document.getElementById('id_site').value;
+                
+                        // Busca os dados do servidor usando fetch
+                        var response = await fetch("/projects/get-select-options/" + siteId + "/");
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição: ' + response.statusText);
+                        }
+                        var data = await response.json();
+                
+                        // Incrementa o contador para criar IDs únicos
+                        if (typeof selectCounterSite === 'undefined') {
+                            window.selectCounterSite = 0; // Declara globalmente se não existir
+                        }
+                        selectCounterSite++;
+                
+                        // Cria um contêiner exclusivo para o select e o botão de remoção
+                        var selectContainerId = `select-container-site-${selectCounterSite}`;
+                        var selectContainer = document.createElement('div');
+                        selectContainer.id = selectContainerId;
+                        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo (opcional)
+                
+                        // Cria o select
+                        var selectHtml = `
+                            <select name="dynamic_selects_${selectCounterSite}" 
+                                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+                            </select>
+                        `;
+                
+                        // Cria o botão de remoção
+                        var removeButtonHtml = `
+                            <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                                    onclick="removeDynamicSelect('${selectContainerId}')">
+                                Remover
+                            </button>
+                        `;
+                
+                        // Adiciona o select e o botão ao contêiner
+                        selectContainer.innerHTML = selectHtml + removeButtonHtml;
+                
+                        // Adiciona o contêiner ao elemento principal
+                        document.getElementById('select-container').appendChild(selectContainer);
+                
+                        // Habilita o botão de envio
+                        var sendFormButton = document.getElementById('send-form');
+                        sendFormButton.disabled = false;
+                    } catch (error) {
+                        console.log('Erro ao obter opções do select:', error);
+                    }
+                })();
+                
+                break;
+
+            //
+            // Adiciona novos membros
+            //
+            case 'member':
+                (async function handleDynamicSelect() {
+                    try {
+                        var data = await fetchData("/projects/get-select-users/");
+                        
+                        // Incrementa o contador para criar IDs únicos
+                        selectCounterMember++;
+                
+                        // Criar um contêiner exclusivo para o select e o botão de remoção
+                        var selectContainerId = `select-container-member-${selectCounterMember}`;
+                        var selectContainer = document.createElement('div');
+                        selectContainer.id = selectContainerId;
+                        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo (opcional)
+                
+                        // Criar o select
+                        var selectHtml = `
+                            <select name="dynamic_selects_members_${selectCounterMember}" 
+                                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+                            </select>
+                        `;
+                
+                        // Criar o botão de remoção
+                        var removeButtonHtml = `
+                            <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                                    onclick="removeDynamicSelect('${selectContainerId}')">
+                                Remover
+                            </button>
+                        `;
+                
+                        // Adicionar o select e o botão ao contêiner
+                        selectContainer.innerHTML = selectHtml + removeButtonHtml;
+                
+                        // Adicionar o contêiner ao elemento principal
+                        document.getElementById('select-container-member').appendChild(selectContainer);
+                
+                        // Desabilitar o botão de envio (se necessário)
+                        var sendFormButton = document.getElementById('send-form');
+                        sendFormButton.disabled = false;
+                    } catch (error) {
+                        console.log('Erro ao obter opções do select', error);
+                    }
+                })();                
+                break;
+
+            //
+            // Adiciona novos stakeholders
+            //
+            case 'stakeholder':
+                (async function handleDynamicSelect() {
+                    try {
+                        // Busca os dados do servidor
+                        var data = await fetchData("/projects/get-select-users/");
+                
+                        // Incrementa o contador para criar IDs únicos
+                        selectCounterStakeholder++;
+                
+                        // Cria um contêiner exclusivo para o select e o botão de remoção
+                        var selectContainerId = `select-container-stakeholder-${selectCounterStakeholder}`;
+                        var selectContainer = document.createElement('div');
+                        selectContainer.id = selectContainerId;
+                        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo (opcional)
+                
+                        // Cria o select
+                        var selectHtml = `
+                            <select name="dynamic_selects_stakeholders_${selectCounterStakeholder}" 
+                                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+                            </select>
+                        `;
+                
+                        // Cria o botão de remoção
+                        var removeButtonHtml = `
+                            <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                                    onclick="removeDynamicSelect('${selectContainerId}')">
+                                Remover
+                            </button>
+                        `;
+                
+                        // Adiciona o select e o botão ao contêiner
+                        selectContainer.innerHTML = selectHtml + removeButtonHtml;
+                
+                        // Adiciona o contêiner ao elemento principal
+                        document.getElementById('select-container-stakeholder').appendChild(selectContainer);
+                
+                        // Habilita o botão de envio
+                        var sendFormButton = document.getElementById('send-form');
+                        sendFormButton.disabled = false;
+                    } catch (error) {
+                        console.log('Erro ao obter opções do select', error);
+                    }
+                })();
+                
+                break;
+        }
+
+    
+    } else {
+
+        // Verificar se formsetContainer[0] não contém elementos úteis
+        // EDIT sendo executado
+        if (formsetContainer[0].childElementCount === 0) {
+            // Faça alguma coisa aqui, como retornar ou lançar um erro
+            switch (type) {
+                case 'building':
+                    
+                    break;
+                case 'member':
+                    // Chame a função quando o DOM estiver carregado
+                    addSelectMember();
+                    break;
+                case 'stakeholder':
+                    addSelectStakeholder();
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+
+        //Se formsetContainer[0] contém elementos úteis
+        let newForm = formsetContainer[0].cloneNode(true),
+            formRegex = RegExp(`form-(\\d){1}-`, 'g');
+        formsetNum++;
+        newForm.innerHTML = newForm.innerHTML.replace(
+            formRegex,
+            `form-${formsetNum}-`
+        );
+
+        //Remove all disabled attributes:
+        newForm.innerHTML = removerDisabled(newForm.innerHTML);
+
+        //Remove all disabled attributes:
+        newForm.innerHTML = removerHidden(newForm.innerHTML);
+        
+        tab.insertBefore(newForm, addFormsetButton); // Ponto principal de inserção
+        totalForms.setAttribute(
+            'value',
+            `${formsetContainer.length}`
+        );
+
+        // Atribuir formsetNum à variável correspondente com base no tipo de formset
+        switch (type) {
+            case 'building':
+                formsetNumBuilding = formsetNum;
+                break;
+            case 'member':
+                formsetNumMember = formsetNum;
+                break;
+            case 'stakeholder':
+                formsetNumStakeholder = formsetNum;
+                break;
+            default:
+                break;
+        }
+
+    }
+
+}
+
+
+// Função para remover o contêiner do select 
+// Por enquanto funcionando no NEW
+function removeDynamicSelect(containerId) {
+    var container = document.getElementById(containerId);
+    if (container) {
+        container.remove();
+    }
+}
+
+// Novos buildings
+let formsetContainerBuilding = document.querySelectorAll('#id-building-selector'),
+    formBuilding = document.querySelector('#form'),
+    addFormsetButtonBuilding = document.querySelector('#add-formset1'),
+    totalFormsBuilding = document.querySelector('#id_form-TOTAL_FORMS'),
+    tab2 = document.querySelector('#tab2'),
+    formsetNumBuilding = formsetContainerBuilding.length - 1;
+
+addFormsetButtonBuilding.addEventListener(
+    'click',
+    (e) => addFormset(e, formsetContainerBuilding, addFormsetButtonBuilding, tab2, totalFormsBuilding, formsetNumBuilding, 'building')
+);
+
+// Novos members
+let formsetContainerMember = document.querySelectorAll('#id-member-selector'),
+    addFormsetButtonMember = document.querySelector('#add-formset2'),
+    tab3 = document.querySelector('#tab3'),
+    totalFormsMember = document.querySelector('#id_form-TOTAL_FORMS'),
+    formsetNumMember = formsetContainerMember.length - 1;
+
+addFormsetButtonMember.addEventListener(
+    'click',
+    (e) => addFormset(e, formsetContainerMember, addFormsetButtonMember, tab3, totalFormsMember, formsetNumMember, 'member')
+);
+
+// Novos stakeholders
+let formsetContainerStakeholder = document.querySelectorAll('#id-stakeholder-selector'),
+    addFormsetButtonStakeholder = document.querySelector('#add-formset3'),
+    tab4 = document.querySelector('#tab4'),
+    totalFormsStakeholder = document.querySelector('#id_form-TOTAL_FORMS'),
+    formsetNumStakeholder = formsetContainerStakeholder.length - 1;
+
+addFormsetButtonStakeholder.addEventListener(
+    'click',
+    (e) => addFormset(e, formsetContainerStakeholder, addFormsetButtonStakeholder, tab4, totalFormsStakeholder, formsetNumStakeholder, 'stakeholder')
+);
+
+// Remove formset 
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-formset')) {
+        e.preventDefault();
+        e.target.parentElement.remove();
+    }
 });
+
+
+// Função para remover todos os atributos 'disabled' de um elemento HTML
+function removerDisabled(htmlString) {
+    return htmlString.replace(/disabled=""/g, '');
+}
+
+// Função para remover todos os atributos 'disabled' de um elemento HTML
+function removerHidden(htmlString) {
+    return htmlString.replace(/hidden=""/g, '');
+}
