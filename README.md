@@ -29,10 +29,10 @@ This application was developed to offer comprehensive control over projects, fro
 
 **Technologies Used**
 - **Programming Language**: Python 3, Javascript
-- **Markup language**: HTML
-- **Framework**: Django
+- **Markup language**: HTML 5 (is mandatory)
+- **Framework**: Django 5.1 (is mandatory)
 
-### 2. Setup
+## 2. Setup
 
 #### Preparing your enviroment
 
@@ -88,6 +88,20 @@ Atfer tests, recreate the database running command at step 11 (above).
 2. Change DEBUG option at your convinience, True for development or False for deploy
 3. Set ALLOWED_HOSTS option at your convinience ([please read ALLOWED_HOSTS section from Django website](https://docs.djangoproject.com/en/5.1/ref/settings/))
 4. Save .env
+
+## 3. Changelog
+
+Link for [changelogs](https://github.com/cthadeusantos/makemake/CHANGELOG.md)
+
+## 4. Known Bugs
+
+Link for [known bugs webpage](https://github.com/cthadeusantos/makemake/KNOWNBUGS.md)
+
+## 5. To do
+
+Link for [TO DO webpage](https://github.com/cthadeusantos/makemake/TODO.md)
+
+## 6. Others
 
 **ACKNOWLEDGMENTS**
 * HTML template (TailAdmin) - https://free-demo.tailadmin.com/

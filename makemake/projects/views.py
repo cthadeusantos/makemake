@@ -14,9 +14,8 @@ from makemake.buildings.forms import BuildingForm, SelectBuildingForm
 # from makemake.projects.forms import ProjectForm, ProjectBuildingForm, ProjectForm2, ProjectForm3
 from makemake.projects.forms import ProjectForm, ProjectBuildingForm
 from makemake.projects.models import Project
-from makemake.documents.models import Document
-
 from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, set_stakeholders_formset, set_buildings_formset
+from makemake.documents.models import Document
 
 from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco
 
@@ -94,8 +93,14 @@ def delete(request, pk):
     project = Project.objects.get(pk=pk)
     condition1 = len(has_linked_documents(project))
     if condition1:
-        return JsonResponse({'success': False})
-    project.delete()
+        messages.error(request, f"Não foi possível apagar o registro: {project.name}")
+    else:
+        try:
+            project.delete()
+            messages.success(request, f"Registro {project.name} apagado com sucesso.")
+        except:
+            messages.error(request, f"Não foi possível apagar o registro: {project.name}")
+
     return home(request)
 
 
