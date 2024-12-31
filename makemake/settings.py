@@ -36,8 +36,23 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'test_without_migrations',
+    'django_extensions',
+    #'django_htmx',  # HTMX
     'makemake.core',
+    'makemake.profiles',
+    'makemake.categories',
     'makemake.documents',
+    'makemake.buildings',
+    'makemake.projects',
+    'makemake.sites',
+    'makemake.agreements',
+    'makemake.companies',
+    'makemake.budgets',
+    'makemake.units',
+    'makemake.compositions',
+    'makemake.prices',
+    'makemake.imports',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +62,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.LoginRequiredMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'django_htmx.middleware.HtmxMiddleware',  # HTMX
 ]
 
 ROOT_URLCONF = 'makemake.urls'
@@ -55,7 +72,7 @@ ROOT_URLCONF = 'makemake.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,4 +143,18 @@ STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = str(BASE_DIR / 'media')
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django_project/settings.py
+LOGIN_REDIRECT_URL = "login/"  # new
+
+# The age of session cookies, in seconds
+SESSION_COOKIE_AGE=28800 # 8 hours
+
+# determines whether session cookies persist even after the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+
+INSTALLED_APPS += ('global_permissions', )

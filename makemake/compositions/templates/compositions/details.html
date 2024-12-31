@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block topmenu %}
+<!-- This is an example component -->
+<div class="grid min-h-[140px] w-full place-items-left overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+  <div class="flex items-center gap-4 w-full">
+    <div class="flex divide-x divide-blue-600">
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-2 bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-lg"
+        type="button">
+        <a href="{% url 'home-compositions' %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-compositions" title="home compositions"></a>
+      </button>
+      {% comment %} <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-2 bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
+      </button>
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-2 bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
+        type="button">
+        <a href="{% url 'new-document' instance.pk %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new building"></a>
+      </button> {% endcomment %}
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-2 px-2 bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-lg"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="Home"></a>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+  <div class="max-w-sm w-full lg:max-w-full lg:flex">
+    <div class="border-r border-b border-l border-gray-400 lg:border-l-0 lg:border-t lg:border-gray-400 bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+      <div class="mb-8">
+        <div class="text-gray-900 font-bold text-xl mb-2 ">{{ instance.get_dbtype_display }} / {{ instance.code }}</div>
+        <div class="text-gray-700 text-base">{{ instance.description }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="w-full mt-6" x-data="{ openTab: 1 }">
+      <div>
+          <ul class="flex border-b" id="myTab">
+            <li class="-mb-px mr-1" @click="openTab = 1">
+                <a :class="openTab === 1 ? 'border-l border-t border-r rounded-t text-blue-700 font-semibold' : 'text-blue-500 hover:text-blue-800'" class="bg-white inline-block py-2 px-4 font-semibold" href="#">Profile</a>
+            </li>
+            <li class="mr-1" @click="openTab = 2">
+                <a :class="openTab === 2 ? 'border-l border-t border-r rounded-t text-blue-700 font-semibold' : 'text-blue-500 hover:text-blue-800'" class="bg-white inline-block py-2 px-4 font-semibold" href="#">Components</a>
+            </li>
+            <li class="mr-1" @click="openTab = 3">
+                <a :class="openTab === 3 ? 'border-l border-t border-r rounded-t text-blue-700 font-semibold' : 'text-blue-500 hover:text-blue-800'" class="bg-white inline-block py-2 px-4 font-semibold" href="#">Members</a>
+            </li>
+            <li class="mr-1" @click="openTab = 4">
+                <a :class="openTab === 4 ? 'border-l border-t border-r rounded-t text-blue-700 font-semibold' : 'text-blue-500 hover:text-blue-800'" class="bg-white inline-block py-2 px-4 font-semibold" href="#">Stakeholders</a>
+            </li>
+          </ul>
+      </div>
+
+      <div class="bg-white p-6">
+          <div id="tab1" class="" x-show="openTab === 1">
+              <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="min-w-full">
+                  <tbody>
+                    <tr class="bg-gray-100">
+                      <td class="w-1/5 text-left py-2 px-4">Database ID code</td>
+                      <td class="w-4/5 text-left py-2 px-4">{{ instance.id }}</td>
+                    </tr>
+                    <tr class="bg-gray-300">
+                      <td class="w-1/5 text-left py-2 px-4">Unit</td>
+                      <td class="w-4/5 text-left py-2 px-4">{{ instance.unit }}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                      <td class="w-1/5 text-left py-2 px-4">Composition</td>
+                      {% if instance.iscomposition %}
+                        <td class="w-4/5 text-left py-2 px-4">Yes</td>
+                      {% else %}
+                        <td class="w-4/5 text-left py-2 px-4">No</td>
+                      {% endif %}
+                    </tr>
+                    <tr class="bg-gray-300">
+                      <td class="w-1/5 text-left py-2 px-4">Discontinued</td>
+                      {% if instance.discontinued %}
+                        <td class="w-4/5 text-left py-2 px-4">Yes</td>
+                      {% else %}
+                        <td class="w-4/5 text-left py-2 px-4">No</td>
+                      {% endif %}
+                    </tr>
+                    <tr class="bg-gray-100">
+                      <td class="w-1/5 text-left py-2 px-4">Create date</td>
+                      <td class="w-4/5 text-left py-2 px-4">{{ instance.created_at }}</td>
+                    </tr>
+                    <tr class="bg-gray-300">
+                      <td class="w-1/5 text-left py-2 px-4">Update date</td>
+                      <td class="w-4/5 text-left py-2 px-4">{{ instance.updated_at }}</td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                      <td class="w-1/5 text-left py-2 px-4">Type</td>
+                      <td class="w-4/5 text-left py-2 px-4">{{ instance.get_type_display }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>        
+          </div>
+          <div id="tab2" class="" x-show="openTab === 2">
+
+            <table class="min-w-full bg-white">
+              <thead class="bg-gray-800 text-white">
+                <tr>
+                    <th class="w-1/6 text-left py-1 px-4 uppercase font-semibold text-sm">Code</th>
+                    <th class="w-1/2 text-left py-1 px-4 uppercase font-semibold text-sm">Item</th>
+                    <th class="w-1/6 text-left py-1 px-4 uppercase font-semibold text-sm">Repre</th>
+                    <th class="w-1/3 text-left py-1 px-4 uppercase font-semibold text-sm">%</td>
+                </tr>
+              </thead>
+
+              <tbody class="text-gray-700">
+                {% for item in components %}
+                  {% if forloop.counter|divisibleby:"2" %}
+                    <tr>
+
+                      <td class="w-1/6 text-left py-3 px-4">
+                          <a href="{% url 'details-composition' item.id %}" class="hover:text-blue-500 flex items-center">
+                              {{ item.composition_slave.get_dbtype_display }} / {{ item.composition_slave.code }}
+                          </a>
+                      </td>
+
+                      <td class="w-1/2 text-left py-3 px-4">
+                        <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500 flex items-center">
+                            {% if item.composition_slave.iscomposition %}
+                                <img width="10px" src="{% static 'images/star.svg' %}" alt="last" title="Last page" class="mr-2">
+                            {% endif %}
+                            {{ item.composition_slave.description }}
+                        </a>
+                      </td>
+                    
+                      <td class="w-1/6 text-left py-3 px-4">
+                          <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500">{{ item.get_origin_display }}</a>
+                      </td>
+
+                      <td class="w-1/3 text-left py-3 px-4">
+                        <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500">{{ item.quantity}}</a>
+
+                      </td>
+
+                    </tr>
+                  {% else %}
+                    <tr class="bg-gray-200">
+
+                      <td class="w-1/6 text-left py-3 px-4">
+                          <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500 flex items-center">
+                              {{ item.composition_slave.get_dbtype_display }} / {{ item.composition_slave.code }}
+                          </a>
+                      </td>
+
+                      <td class="w-1/2 text-left py-3 px-4">
+                        <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500 flex items-center">
+                            {% if item.composition_slave.iscomposition %}
+                                <img width="10px" src="{% static 'images/star.svg' %}" alt="last" title="Last page" class="mr-2">
+                            {% endif %}
+                            {{ item.composition_slave.description }}
+                        </a>
+                      </td>
+                    
+                      <td class="w-1/6 text-left py-3 px-4">
+                          <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500">{{ item.get_origin_display }}</a>
+                      </td>
+
+                      <td class="w-1/3 text-left py-3 px-4">
+                        <a href="{% url 'details-composition' item.composition_slave.id %}" class="hover:text-blue-500">{{ item.quantity }}</a>
+                      </td>
+
+                    </tr>
+
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+      
+            </table>
+
+          </div>
+          <div id="tab3" class="" x-show="openTab === 3">
+            <ul class="list-group">
+              {% for username in instance.members.all %}
+              <li class="list-group-item">{{ username }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div id="tab4" class="" x-show="openTab === 4">
+            <ul class="list-group">
+              {% for username in instance.stakeholders.all %}
+              <li class="list-group-item">{{ username }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<p style="font-size:0.775em">module: compositions-details-2024.09</p>
+{% endblock %}

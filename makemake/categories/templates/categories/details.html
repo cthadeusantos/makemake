@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <span><a href="{% url 'home-categories' %}">[CATEGORIES]</a></span>
+    <H1>Category details</H1>
+    <p>{{ category.code }}</p>
+    <p>{{ category.name }}</p>
+    <p>{{ category.description }}</p>
+    <p>{{ category.category.name }}</p>
+    <p style="font-size:0.775em">module: categories-details-2024.09</p>
+
+{% endblock %}

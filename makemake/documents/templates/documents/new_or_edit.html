@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block topmenu%}
+<!-- This is an example component -->
+<div class="grid min-h-[140px] w-full place-items-left overflow-x-scroll rounded-lg p-6 lg:overflow-visible">
+  <div class="flex flex-col gap-4 w-max">
+    <div class="flex divide-x divide-blue-600 row">
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0"
+        type="button">
+        <a href="{% url 'home-documents' numproject %}"><img width="30px" src="{% static "images/skip-backward.svg" %}" alt="home-buildings" title="home buildings"></a>
+      </button>
+      {% comment %} <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
+      </button> {% endcomment %}
+      <button
+        class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
+        type="button">
+        <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="Home"></a>
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+{% comment %} <form action="." method="post">
+    {% csrf_token %} {% endcomment %}
+    <div class="w-full">
+        <form class="w-full" role="form" method="post" id="add-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input id="send-form" type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="removeDisabled()">
+        </form>
+    </div> <!-- FLUID -->
+    
+{% comment %} </form> {% endcomment %}
+<script>
+    function removeDisabled() {
+        document.getElementById("id_building").removeAttribute("disabled");
+        document.getElementById("id_categories").removeAttribute("disabled");
+    }
+</script>
+
+<p style="font-size:0.775em">module: documents-new_or_edit-2024.09</p>
+
+{% endblock %}

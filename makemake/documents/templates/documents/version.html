@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<span><a href="{% url 'details-document' pk %}">[DETAILS]</a></span>
+<h1>New version FORM</h1>
+
+<div class="mx-auto">
+    <form class="w-full" action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"><img src="{% static "images/upload.svg" %}" alt="upload" title="Upload"></button>
+    </form>
+</div>
+<p style="font-size:0.775em">module: documents-version-2024.09</p>
+
+
+{% endblock %}
