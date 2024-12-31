@@ -79,17 +79,31 @@
                     {% if buildings_formset %}
                         {{ buildings_formset.management_form}}
                             {% for form in buildings_formset %}
-                            <div id="id-building-selector" class="formset-container {{buildings_formset.prefix}}">
-                                {% if form.initial %}
-                                    {{ form }}<button id="bd-remove-button-{{forloop.counter}}" class="btn btn-danger remove-formset" type="button" hidden>Remover</button>
-                                {% endif %}
-                            </div>
+                                <div id="id-building-selector-{{ forloop.counter }}" class="formset-container {{buildings_formset.prefix}}"> 
+                                    <div class="flex">
+                                        <div class="w-11/12"> 
+                                            {% if form.initial %}
+                                                {{ form }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="w-1/12">
+                                            {% if form.initial %}
+                                                <button id="bd-remove-button-{{forloop.counter}}" 
+                                                        class="text-red-500 border border-red-500 rounded px-2 py-1 
+                                                            hover:bg-red-500 hover:text-white remove-formset" 
+                                                        type="button" hidden>
+                                                    Remover
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
                             {% endfor %}
                     {% endif %}
                     
-                        <p><div id="select-container"></div></p>
-                        <!-- Botão para adicionar novo select -->
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  id="add-formset1" type="button">Add building</button>
+                    <p><div id="select-container"></div></p>
+                    <!-- Botão para adicionar novo select -->
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  id="add-formset1" type="button">Add building</button>
 
 
                 </div>
@@ -97,37 +111,62 @@
                 <div id="tab3" class="" x-show="openTab === 3">
                     {% if members_formset %}
                         {{ members_formset.management_form}}
-                            {% for form in members_formset %}
-                                <div id="id-member-selector" class="formset-container {{members_formset.prefix}}">
-                                    {% if form.initial %}
-                                        {{ form }}
-                                        <button id="mb-remove-button-{{forloop.counter}}" class="btn btn-danger remove-formset" type="button" hidden>Remover</button>
-                                    {% endif %}
+                        {% for form in members_formset %}
+                            <div id="id-member-selector-{{ forloop.counter }}" class="formset-container {{members_formset.prefix}}"> 
+                                <div class="flex">
+                                    <div class="w-10/12"> 
+                                        {% if form.initial %}
+                                            {{ form }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="w-2/12">
+                                        {% if form.initial %}
+                                            <button id="bd-remove-button-{{forloop.counter}}" 
+                                                    class="text-red-500 border border-red-500 rounded px-2 py-1 
+                                                           hover:bg-red-500 hover:text-white remove-formset" 
+                                                    type="button" hidden>
+                                                Remover
+                                            </button>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endfor %}
+                            </div>                                
+                        {% endfor %}
                     {% endif %}
                     <p><div id="select-container-member"></div></p>
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"  id="add-formset2" type="button">Add member</button>
-
                 
                 </div>
-
+                
                 <div id="tab4" class="" x-show="openTab === 4">
-
+                
                     {% if stakeholders_formset %}
                     {{ stakeholders_formset.management_form}}
                         {% for form in stakeholders_formset %}
-                        <div id="id-stakeholder-selector" class="formset-container {{stakeholders_formset.prefix}}">
-                            {% if form.initial %}
-                                {{ form }}
-                                <button id="st-remove-button-{{forloop.counter}}" class="btn btn-danger remove-formset" type="button" hidden>Remover</button>
-                            {% endif %}    
+                        <div id="id-stakeholder-selector-{{ forloop.counter }}" class="formset-container {{stakeholders_formset.prefix}}">
+                            <div class="flex">
+                                <div class="w-10/12"> 
+                                    {% if form.initial %}
+                                        {{ form }}
+                                    {% endif %}
+                                </div>
+                                <div class="w-2/12">
+                                    {% if form.initial %}
+                                        <button id="bd-remove-button-{{forloop.counter}}" 
+                                                class="text-red-500 border border-red-500 rounded px-2 py-1 
+                                                       hover:bg-red-500 hover:text-white remove-formset" 
+                                                type="button" hidden>
+                                            Remover
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>   
                         </div>
                         {% endfor %}
                     {% endif %}
                     <p><div id="select-container-stakeholder"></div></p>
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="add-formset3" type="button">Add stakeholder</button>
-
+                
                 </div>
             </div>
         </div>

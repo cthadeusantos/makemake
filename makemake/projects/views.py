@@ -262,7 +262,9 @@ def edit(request, pk=None):
                 keys.add(id)
             
             # Usar expressão regular para selecionar as chaves desejadas
-            chaves_selecionadas = [chave for chave in chaves if re.match(r'form-\d+-building', chave)]
+            chaves_selecionadas1 = [chave for chave in chaves if re.match(r'form-\d+-building', chave)]
+            chaves_selecionadas2 = [chave for chave in chaves if re.match(r'dynamic_selects_\d+', chave)]
+            chaves_selecionadas = chaves_selecionadas1 + chaves_selecionadas2
             for value in chaves_selecionadas:
                 value = int(request.POST.get(value,''))
                 if value not in keys:

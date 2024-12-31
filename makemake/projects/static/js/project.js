@@ -2,6 +2,16 @@ var selectCounterSite = 0;  // Inicializa um contador para IDs únicos
 var selectCounterMember = 0;  // Inicializa um contador para IDs únicos
 var selectCounterStakeholder = 0;  // Inicializa um contador para IDs únicos
 
+// A SER USADO FUTURAMENTE
+//const plusString = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+//  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+//</svg>`;
+
+//const minusString = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+//  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
+//</svg>
+//`;
+
 async function fetchData(url) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -91,97 +101,118 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 //
-// Adiciona novos prédios
-//
-/*
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('add-select').addEventListener('click', async function () {
-        try {
-            var siteId = document.getElementById('id_site').value;
-            var data = await fetchData("/projects/get-select-options/" + siteId + "/");
-            //var selectCounterSite = 0;
-
-            // Incrementa o contador para criar IDs únicos
-            selectCounterSite++;
-
-            // Criar um novo select com ID único
-            //var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="form-select form-select-sm" >';
-            var selectHtml = '<p><select name="dynamic_selects_' + selectCounterSite + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer" >';
-            for (var i = 0; i < data.options.length; i++) {
-                selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-            }
-            selectHtml += '</select></p>';
-
-            // Adicionar ao contêiner
-            document.getElementById('select-container').insertAdjacentHTML('beforeend', selectHtml);
-
-            // Desabilita botão submit
-            var sendFormButton = document.getElementById('send-form');
-            sendFormButton.disabled = false;
-        } catch (error) {
-            console.log('Erro ao obter opções do select', error);
-        }
-    });
-});
-*/
-
-
-
-//
 // Adiciona novos membros
 //
+// Função async para lidar com a lógica
 async function addSelectMember() {
     try {
-        var data = await fetchData("/projects/get-select-users/");
-        //var selectCounterSite = 0;
+        // Busca os dados do servidor usando fetch
+        var response = await fetch("/projects/get-select-users/");
+        if (!response.ok) {
+            throw new Error('Erro na requisição: ' + response.statusText);
+        }
+
+        var data = await response.json();
 
         // Incrementa o contador para criar IDs únicos
+        if (typeof selectCounterMember === 'undefined') {
+            window.selectCounterMember = 0; // Declara globalmente se não existir
+        }
         selectCounterMember++;
 
-        // Criar um novo select com ID único
-        var selectHtml = '<p><select name="dynamic_selects_members_' + selectCounterMember + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
-        for (var i = 0; i < data.options.length; i++) {
-            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-        }
-        selectHtml += '</select></p>';
+        // Cria um contêiner exclusivo para o select e o botão de remoção
+        var selectContainerId = `select-container-member-${selectCounterMember}`;
+        var selectContainer = document.createElement('div');
+        selectContainer.id = selectContainerId;
+        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo
 
-        // Adicionar ao contêiner
-        document.getElementById('select-container-member').insertAdjacentHTML('beforeend', selectHtml);
+        // Cria o select
+        var selectHtml = `
+            <select name="dynamic_selects_members_${selectCounterMember}" 
+                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+            </select>
+        `;
 
-        // Desabilita botão submit
+        // Cria o botão de remoção
+        var removeButtonHtml = `
+            <button type="button" 
+                    class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                    onclick="removeDynamicSelect('${selectContainerId}')">
+                Remover
+            </button>
+        `;
+
+        // Adiciona o select e o botão ao contêiner
+        selectContainer.innerHTML = selectHtml + removeButtonHtml;
+
+        // Adiciona o contêiner ao elemento principal
+        document.getElementById('select-container-member').appendChild(selectContainer);
+
+        // Habilita o botão de envio
         var sendFormButton = document.getElementById('send-form');
         sendFormButton.disabled = false;
     } catch (error) {
-        console.log('Erro ao obter opções do select', error);
+        console.log('Erro ao obter opções do select:', error);
     }
 }
+
 
 //
 // Adiciona novos stakeholders
 //
+// Função async para lidar com a lógica
 async function addSelectStakeholder() {
     try {
-        var data = await fetchData("/projects/get-select-users/");
-        //var selectCounterSite = 0;
+
+        // Busca os dados do servidor usando fetch
+        var response = await fetch("/projects/get-select-users/");
+        if (!response.ok) {
+            throw new Error('Erro na requisição: ' + response.statusText);
+        }
+
+        var data = await response.json();
 
         // Incrementa o contador para criar IDs únicos
+        if (typeof selectCounterStakeholder === 'undefined') {
+            window.selectCounterStakeholder = 0; // Declara globalmente se não existir
+        }
         selectCounterStakeholder++;
 
-        // Criar um novo select com ID único
-        var selectHtml = '<p><select name="dynamic_selects_stakeholders_' + selectCounterStakeholder + '" class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">';
-        for (var i = 0; i < data.options.length; i++) {
-            selectHtml += '<option value="' + data.options[i].value + '">' + data.options[i].label + '</option>';
-        }
-        selectHtml += '</select></p>';
+        // Cria um contêiner exclusivo para o select e o botão de remoção
+        var selectContainerId = `select-container-stakeholder-${selectCounterStakeholder}`;
+        var selectContainer = document.createElement('div');
+        selectContainer.id = selectContainerId;
+        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo
 
-        // Adicionar ao contêiner
-        document.getElementById('select-container-stakeholder').insertAdjacentHTML('beforeend', selectHtml);
+        // Cria o select
+        var selectHtml = `
+            <select name="dynamic_selects_stakeholders_${selectCounterStakeholder}" 
+                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+            </select>
+        `;
 
-        // Desabilita botão submit
+        // Cria o botão de remoção
+        var removeButtonHtml = `
+            <button type="button" 
+                    class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                    onclick="removeDynamicSelect('${selectContainerId}')">
+                Remover
+            </button>
+        `;
+
+        // Adiciona o select e o botão ao contêiner
+        selectContainer.innerHTML = selectHtml + removeButtonHtml;
+
+        // Adiciona o contêiner ao elemento principal
+        document.getElementById('select-container-stakeholder').appendChild(selectContainer);
+
+        // Habilita o botão de envio
         var sendFormButton = document.getElementById('send-form');
         sendFormButton.disabled = false;
     } catch (error) {
-        console.log('Erro ao obter opções do select', error);
+        console.log('Erro ao obter opções do select:', error);
     }
 }
 
@@ -349,11 +380,9 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                     } catch (error) {
                         console.log('Erro ao obter opções do select', error);
                     }
-                })();
-                
+                })();             
                 break;
         }
-
     
     } else {
 
@@ -418,7 +447,6 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
 
 }
 
-
 // Função para remover o contêiner do select 
 // Por enquanto funcionando no NEW
 function removeDynamicSelect(containerId) {
@@ -428,7 +456,7 @@ function removeDynamicSelect(containerId) {
     }
 }
 
-// Novos buildings
+// New buildings
 let formsetContainerBuilding = document.querySelectorAll('#id-building-selector'),
     formBuilding = document.querySelector('#form'),
     addFormsetButtonBuilding = document.querySelector('#add-formset1'),
@@ -441,7 +469,7 @@ addFormsetButtonBuilding.addEventListener(
     (e) => addFormset(e, formsetContainerBuilding, addFormsetButtonBuilding, tab2, totalFormsBuilding, formsetNumBuilding, 'building')
 );
 
-// Novos members
+// New members
 let formsetContainerMember = document.querySelectorAll('#id-member-selector'),
     addFormsetButtonMember = document.querySelector('#add-formset2'),
     tab3 = document.querySelector('#tab3'),
@@ -453,7 +481,7 @@ addFormsetButtonMember.addEventListener(
     (e) => addFormset(e, formsetContainerMember, addFormsetButtonMember, tab3, totalFormsMember, formsetNumMember, 'member')
 );
 
-// Novos stakeholders
+// New stakeholders
 let formsetContainerStakeholder = document.querySelectorAll('#id-stakeholder-selector'),
     addFormsetButtonStakeholder = document.querySelector('#add-formset3'),
     tab4 = document.querySelector('#tab4'),
@@ -465,12 +493,24 @@ addFormsetButtonStakeholder.addEventListener(
     (e) => addFormset(e, formsetContainerStakeholder, addFormsetButtonStakeholder, tab4, totalFormsStakeholder, formsetNumStakeholder, 'stakeholder')
 );
 
-// Remove formset 
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-formset')) {
-        e.preventDefault();
-        e.target.parentElement.remove();
-    }
+// Remove formset (deprecated)
+// Delete select option and button remove
+// document.addEventListener('click', function (e) {
+//     if (e.target.classList.contains('remove-formset')) {
+//         e.preventDefault();
+//         e.target.parentElement.remove();
+//     }
+// });
+
+// Remove formset
+// Delete select option and button remove
+// Adjust for new condition , select and button are removed
+const removeButtons = document.querySelectorAll('.remove-formset');
+removeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        const parentDiv = this.closest('.formset-container'); 
+        parentDiv.remove(); 
+    });
 });
 
 
