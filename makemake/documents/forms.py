@@ -64,10 +64,9 @@ class DocumentForm2(forms.Form):
             self.fields['docstatus'].initial = instance.docstatus
             self.fields['building'].disabled = True
             self.fields['categories'].disabled = True
-            
-
+    
 class VersionForm(forms.Form):
-    version_number = forms.IntegerField(label='Version',
+    released = forms.IntegerField(label='Version',
                                         widget=forms.NumberInput(attrs={'name': 'version',
                                                                         'readonly': 'true',
                                                                         'class': CSS_CHARFIELD_1,
@@ -92,18 +91,25 @@ class VersionForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         pk = kwargs.pop('pk', None)
+        last_number = kwargs.pop('sequential', None)
+        instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
         today_is = datetime.today()
         document = Document.objects.get(pk=pk)
-        version = Version.objects.filter(document=document).last()
-        if version is None:
-            self.fields['version_number'].initial = 1
-        else:
-            self.fields['version_number'].initial = version.version_number + 1
+        #version = Version.objects.filter(document=document).last()
+        version = last_number
+        self.fields['released'].initial = version
+        #self.fields['changelog'].initial = changelog
+        # if version is None:
+        #     self.fields['released'].initial = 1
+        # else:
+        #     self.fields['released'].initial = version.released + 1
         self.fields['upload_at'].initial = today_is  # or timezone aware equivalent
+        if instance:
+            self.fields['changelog'].initial = instance.changelog
         # Readonly fields
         #self.fields['upload_at'].disabled = True
-        #self.fields['version_number'].disabled = True
+        #self.fields['released'].disabled = True
         #self.fields['upload_url'].widget.attrs.update({'type': 'file'})
 
 # class ComboboxCategoryForm(forms.Form):

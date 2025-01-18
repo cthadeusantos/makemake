@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from makemake.companies.models import Company
 from makemake.companies.forms import CompanyForm
 
+from makemake.myfilters.templatetags.formats import format_cnpj_cpf
+
 from django.db import IntegrityError
 from django.contrib import messages
 
@@ -37,8 +39,6 @@ def home(request):
     items = Company.objects.all()
     messages.info(request, None)
     return render(request, 'companies/home.html', {'items': items})
-
-
 
 def search(request):
     # Expressão regular

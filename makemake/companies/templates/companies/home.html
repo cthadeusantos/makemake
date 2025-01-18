@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load formats %}
 
 {% block topmenu%}
 <!-- This is an example component -->
@@ -61,7 +62,7 @@
           {% for item in items %}
             {% if forloop.counter|divisibleby:"2" %}
               <tr>
-                <td class="w-1/3 text-left py-3 px-4">{{ item.number }}</td>
+                <td class="w-1/3 text-left py-3 px-4">{{ item.number|format_cnpj_cpf }}</td>
                 <td class="w-1/3 text-left py-3 px-4">{{ item.name }}</td>
                 <td class="text-left py-3 px-4">
                   <button type="button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-1 rounded"><a href="{% url 'edit-company' pk=item.id %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>
@@ -70,7 +71,7 @@
             </tr>
             {% else %}
               <tr class="bg-gray-200">
-                <td class="w-1/3 text-left py-3 px-4">{{ item.number }}</td>
+                <td class="w-1/3 text-left py-3 px-4">{{ item.number|format_cnpj_cpf }}</td>
                 <td class="w-1/3 text-left py-3 px-4">{{ item.name }}</td>
                 <td class="text-left py-3 px-4">
                   <button type="button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-1 rounded"><a href="{% url 'edit-company' pk=item.id %}"><img src="{% static "images/bandaid.svg" %}" alt="bandaid" title="Edit"></a></button>

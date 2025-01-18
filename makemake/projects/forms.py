@@ -88,6 +88,12 @@ class ProjectForm(forms.Form):
         label='Project Manager Support'
     )
     project_status = ChoiceField(choices=PROJECT_STATUS_CHOICES, required=True, label="Project status", widget=forms.Select(attrs={'class': CSS_SELECT_1}))
+    site = forms.ModelChoiceField(
+            queryset=Site.objects.all(),
+            required=True,
+            widget=forms.Select(attrs={'class': CSS_SELECT_1, 'readonly': 'readonly',}),
+            label='Site'
+        )
     remarks = forms.CharField(label='Remarks',
                                     widget=forms.Textarea(attrs={'name': 'remarks',
                                                             'rows': 2,
@@ -106,13 +112,6 @@ class ProjectForm(forms.Form):
                                                             }),
                                     required=False,
                                     )
-    site = forms.ModelChoiceField(
-            queryset=Site.objects.all(),
-            required=True,
-            widget=forms.Select(attrs={'class': CSS_SELECT_1, 'readonly': 'readonly',}),
-            label='Site'
-        )
-
 
     def __init__(self, *args, **kwargs):
         prefix = kwargs.pop('prefix', None)
@@ -130,7 +129,8 @@ class ProjectForm(forms.Form):
             max_code = Project.objects.annotate(
                 code_as_int=Cast('code', IntegerField())
             ).filter(
-                ~Q(code_as_int=None)
+                ~Q(code_as_int=None),
+                year=year
             ).aggregate(max_code_as_int=Max('code_as_int'))['max_code_as_int']
             if max_code:
                 self.fields['code'].initial = max_code + 1

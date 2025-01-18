@@ -17,14 +17,14 @@
         <a href="{% url 'home' %}"><img width="30px" src="{% static "images/house.svg" %}" alt="home" title="home"></a>
       </button>
         {% if versions %}
-            <button type="button" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none disabled"><a href="{% url 'delete-document' document.id %}"><img src="{% static "images/trash.svg" %}" alt="trash" title="Delete"></a></button>
+            <button type="button" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none disabled"><a href="{% url 'delete-document' document.id %}"><img width="32px" src="{% static "images/trash.svg" %}" alt="Delete" title="Delete"></a></button>
         {% else %}
-            <button type="button" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"><a href="{% url 'delete-document' document.id %}"><img src="{% static "images/trash.svg" %}" alt="trash" title="Delete"></a></button>
+            <button type="button" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-r-none border-r-0 rounded-l-none"><a href="{% url 'delete-document' document.id %}"><img width="32px" src="{% static "images/trash.svg" %}" alt="Delete" title="Delete"></a></button>
         {% endif %}
       <button
         class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-blue-500 text-white shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none rounded-l-none"
         type="button">
-        <a href="{% url 'version-document' document.id %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new building"></a>
+        <a href="{% url 'version-document' document.id %}"><img width="30px" src="{% static "images/file-earmark-plus.svg" %}" alt="new" title="Create a new document version"></a>
       </button>
     </div>
   </div>
@@ -67,6 +67,18 @@
               <td class="w-1/5 text-left py-2 px-4">Update date</td>
               <td class="w-4/5 text-left py-2 px-4">{{ document.updated_at }}</td>
             </tr>
+            <tr class="bg-gray-300">
+              <td class="w-1/5 text-left py-2 px-4">Category</td>
+              <td class="w-4/5 text-left py-2 px-4">{{ document.categories.name }}</td>
+            </tr>
+            <tr class="bg-gray-100">
+              <td class="w-1/5 text-left py-2 px-4">Document type</td>
+              <td class="w-4/5 text-left py-2 px-4">{{ document.get_doctype_display }}</td>
+            </tr>
+            <tr class="bg-gray-300">
+              <td class="w-1/5 text-left py-2 px-4">Filename</td>
+              <td class="w-4/5 text-left py-2 px-4">{{ filename }}</td>
+            </tr>
           </tbody>
         </table>
       </div>   
@@ -84,25 +96,50 @@
           </thead>
             {% for version in versions %}
               {% if forloop.counter|divisibleby:"2" %}
-                <tr>
+                <tr title="{{ version.changelog }}">
+                  
                   <td class="w-1/2 text-left py-3 px-4">{{ version.upload_url.name }}</td>
-                  <td class="w-1/6 text-left py-3 px-4 text-sm">{{ version.version_number }}</td>
+                  <td class="w-1/6 text-left py-3 px-4 text-sm">{{ version.released }}</td>
                   <td class="w-1/6 text-left py-3 px-4">{{ version.upload_at }}</td>
-                  <td class="w-1/6 text-left py-3 px-4"><button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'download-version-file' version.id %}"><img src="{% static "images/download.svg" %}" alt="download" title="Download"></a></button></td>
-              </tr>
+                  {% if version.upload_url.name  %}
+                    <td class="w-1/6 text-left py-3 px-4">
+                      <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'version-edit' version.id %}"><img src="{% static "images/edit.svg" %}" ></a></button>
+                      <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'download-version-file' version.id %}"><img src="{% static "images/download.svg" %}" alt="download" title="Download"></a></button>
+                    </td>
+                  {% else %}
+                    <td class="w-1/6 text-left py-3 px-4">
+                      <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'version-edit' version.id %}"><img src="{% static "images/edit.svg" %}" ></a></button>
+                      <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href=""><img src="{% static "images/upload.svg" %}" alt="Upload" title="Upload"></a></button>
+                  </td>
+                  {% endif %}
+                </tr>
               {% else %}
-                <tr class="bg-gray-200">
+                <tr class="bg-gray-200" title="{{ version.changelog }}">
                     <td class="w-1/2 text-left py-3 px-4">{{ version.upload_url.name }}</td>
-                    <td class="w-1/6 text-left py-3 px-4 text-sm">{{ version.version_number }}</td>
+                    <td class="w-1/6 text-left py-3 px-4 text-sm">{{ version.released }}</td>
                     <td class="w-1/6 text-left py-3 px-4">{{ version.upload_at }}</td>
-                    <td class="w-1/6 text-left py-3 px-4"><button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'download-version-file' version.id %}"><img src="{% static "images/download.svg" %}" alt="download" title="Download"></a></button></td>
-                  </tr>
+                    {% if  version.upload_url.name  %}
+                      <td class="w-1/6 text-left py-3 px-4">
+                        <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'version-edit' version.id %}"><img src="{% static "images/edit.svg" %}" alt="Edit" title="Edit"></a></button>
+                        <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'download-version-file' version.id %}"><img src="{% static "images/download.svg" %}" alt="Download" title="Download"></a></button>
+                      </td>
+                    {% else %}
+                      <td class="w-1/6 text-left py-3 px-4">
+                        <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href="{% url 'version-edit' version.id %}"><img src="{% static "images/edit.svg" %}" alt="Edit" title="Edit"></a></button>
+                        <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"><a href=""><img src="{% static "images/upload.svg" %}" alt="Upload" title="Upload"></a></button>
+                      </td>
+                    {% endif %}
+                    </tr>
               {% endif %}
             {% endfor %}
           </tbody>
         </table>
       </div>
 
-      <p style="font-size:0.775em">module: documents-details-2024.09</p>
+      <p style="font-size:0.775em">module: documents-details-2025.01</p>
 
+      {% if error == 1 %}
+        <script>window.alert("There is a previous revision without a file!")</script>
+      {% endif %}
+      
 {% endblock %}

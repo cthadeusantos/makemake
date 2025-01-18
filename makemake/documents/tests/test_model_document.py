@@ -25,7 +25,7 @@ class DocumentModelTest(TestCase):
 class VersionModelTest(TestCase):
     def setUp(self):
         self.obj = Version(
-            version_number=1,
+            released=1,
             changelog="Adição inicial",
         )
         self.obj.save()

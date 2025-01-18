@@ -9,6 +9,7 @@ urlpatterns = [
     path('delete/<int:pk>/', delete, name='delete-document'),
     path('details/<int:pk>/', details, name='details-document'),
     path('version/<int:pk>/', version, name='version-document'),
+    path('version_edit/<int:pk>/', edit_version, name='version-edit'),
     path('search/<int:pk>/', search, name='search-documents'),
     path('document-download/<int:file_id>/', download_file, name='download-version-file'),
     path('document-downloads/<int:numproject>/', download_files, name='download-document-files'),

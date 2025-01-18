@@ -1,5 +1,7 @@
 # Makemake
 
+Please be advise! That is a working in progress!
+
 ## 1. Project Control Application
 
 ### Overview
@@ -28,7 +30,7 @@ This application was developed to offer comprehensive control over projects, fro
 * Insertion and use of these materials and services in the project budgets.
 
 **Technologies Used**
-- **Programming Language**: Python 3, Javascript
+- **Programming Language**: Python 3 (>3.10), Javascript (> ECMAScript 2018)
 - **Markup language**: HTML 5 (is mandatory)
 - **Framework**: Django 5.1 (is mandatory)
 
@@ -91,15 +93,15 @@ Atfer tests, recreate the database running command at step 11 (above).
 
 ## 3. Changelog
 
-Link for [changelogs](https://github.com/cthadeusantos/makemake/CHANGELOG.md)
+Link for [changelogs](CHANGELOG.md)
 
 ## 4. Known Bugs
 
-Link for [known bugs webpage](https://github.com/cthadeusantos/makemake/KNOWNBUGS.md)
+Link for [known bugs webpage](KNOWNBUGS.md)
 
 ## 5. To do
 
-Link for [TO DO webpage](https://github.com/cthadeusantos/makemake/TODO.md)
+Link for [TO DO webpage](TODO.md)
 
 ## 6. Others
 

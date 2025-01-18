@@ -76,6 +76,46 @@ FILE_EXTENSION_CHOICES = \
         (15, 'Image JPEG'),   # Joint Photographic Experts Group (JPEG) file
     )
 
+FILE_EXTENSION_CHOICES = \
+    (
+        (None, '---'),
+        (1, 'Autocad - DWG'),     # Autocad file
+        (2, 'Autocad - DXF'),     # Autocad file
+        (3, 'Adobe PDF'),     # Portable document format file
+        (4, 'Word - DOCX'),    # WORD file
+        (5, 'Word - DOC'),     # WORD file
+        (6, 'EXCEL - XLSX'),    # EXCEL file
+        (7, 'EXCEL - XLS'),     # EXCEL file
+        (8, 'Text - TXT'),     # Text file
+        (9, 'Libreoffice CALC - ODT'),     # LIBREOFFICE CALC file
+        (10, 'Libreoffice Write - ODS'),    # LIBREOFFICE file
+        (11, 'Powerpoint - PPTX'),   # Powerpoint file
+        (12, 'Powerpoint - PPT'),    # Powerpoint file
+        (13, 'Image PNG'),    # Portable Network Graphic, a type of raster image file
+        (14, 'Image JPG'),    # Joint Photographic Experts Group (JPEG) file
+        (15, 'Image JPEG'),   # Joint Photographic Experts Group (JPEG) file
+    )
+
+FILE_EXTENSION = \
+    (
+        (None, '---'),
+        (1, 'dwg'),     # Autocad file
+        (2, 'dxf'),     # Autocad file
+        (3, 'pdf'),     # Portable document format file
+        (4, 'docx'),    # WORD file
+        (5, 'doc'),     # WORD file
+        (6, 'xlsx'),    # EXCEL file
+        (7, 'xls'),     # EXCEL file
+        (8, 'txt'),     # Text file
+        (9, 'odt'),     # LIBREOFFICE CALC file
+        (10, 'ods'),    # LIBREOFFICE file
+        (11, 'pptx'),   # Powerpoint file
+        (12, 'ppt'),    # Powerpoint file
+        (13, 'png'),    # Portable Network Graphic, a type of raster image file
+        (14, 'jpg'),    # Joint Photographic Experts Group (JPEG) file
+        (15, 'jpeg'),   # Joint Photographic Experts Group (JPEG) file
+    )
+
 PLACES_CHOICES = ((1, 'Acre'),
                   (2, 'Alagoas'),
                   (3, 'Amapá'),
@@ -145,6 +185,20 @@ DOCUMENT_STATUS_CHOICES = \
         (35, 'Execution'),
         (40, 'Monitoring and Controlling'),
         (45, 'Closure'),
+    )
+
+DOCUMENT_STATUS_CHOICES_CODE_FOR_FILES = \
+    (
+        (None, '--------'),
+        (5, 'A'),
+        (10, 'B'),
+        (15, 'C'),
+        (20, 'D'),
+        (25, 'E'),
+        (30, 'F'),
+        (35, 'G'),
+        (40, 'H'),
+        (45, 'I'),
     )
 
 AGREEMENT_CATEGORIES_CHOICES = \

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'test_without_migrations',
     'django_extensions',
     #'django_htmx',  # HTMX
+    'makemake.myfilters',
     'makemake.core',
     'makemake.profiles',
     'makemake.categories',

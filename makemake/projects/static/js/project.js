@@ -1,6 +1,7 @@
 var selectCounterSite = 0;  // Inicializa um contador para IDs únicos
 var selectCounterMember = 0;  // Inicializa um contador para IDs únicos
 var selectCounterStakeholder = 0;  // Inicializa um contador para IDs únicos
+var selectCounterAuthSubmit = 0;  // Inicializa um contador para IDs únicos
 
 // A SER USADO FUTURAMENTE
 //const plusString = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -138,7 +139,7 @@ async function addSelectMember() {
         var removeButtonHtml = `
             <button type="button" 
                     class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
-                    onclick="removeDynamicSelect('${selectContainerId}')">
+                    onclick="removeDynamicSelect('${selectContainerId}', 0)">
                 Remover
             </button>
         `;
@@ -150,8 +151,8 @@ async function addSelectMember() {
         document.getElementById('select-container-member').appendChild(selectContainer);
 
         // Habilita o botão de envio
-        var sendFormButton = document.getElementById('send-form');
-        sendFormButton.disabled = false;
+        //var sendFormButton = document.getElementById('send-form');
+        //sendFormButton.disabled = false;
     } catch (error) {
         console.log('Erro ao obter opções do select:', error);
     }
@@ -197,7 +198,7 @@ async function addSelectStakeholder() {
         var removeButtonHtml = `
             <button type="button" 
                     class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
-                    onclick="removeDynamicSelect('${selectContainerId}')">
+                    onclick="removeDynamicSelect('${selectContainerId}', 0)">
                 Remover
             </button>
         `;
@@ -209,8 +210,8 @@ async function addSelectStakeholder() {
         document.getElementById('select-container-stakeholder').appendChild(selectContainer);
 
         // Habilita o botão de envio
-        var sendFormButton = document.getElementById('send-form');
-        sendFormButton.disabled = false;
+        //var sendFormButton = document.getElementById('send-form');
+        //sendFormButton.disabled = false;
     } catch (error) {
         console.log('Erro ao obter opções do select:', error);
     }
@@ -241,46 +242,60 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                             throw new Error('Erro na requisição: ' + response.statusText);
                         }
                         var data = await response.json();
-                
-                        // Incrementa o contador para criar IDs únicos
-                        if (typeof selectCounterSite === 'undefined') {
-                            window.selectCounterSite = 0; // Declara globalmente se não existir
-                        }
-                        selectCounterSite++;
-                
-                        // Cria um contêiner exclusivo para o select e o botão de remoção
-                        var selectContainerId = `select-container-site-${selectCounterSite}`;
-                        var selectContainer = document.createElement('div');
-                        selectContainer.id = selectContainerId;
-                        selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo (opcional)
-                
-                        // Cria o select
-                        var selectHtml = `
-                            <select name="dynamic_selects_${selectCounterSite}" 
-                                    class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
-                                ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
-                            </select>
-                        `;
-                
-                        // Cria o botão de remoção
-                        var removeButtonHtml = `
-                            <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
-                                    onclick="removeDynamicSelect('${selectContainerId}')">
-                                Remover
-                            </button>
-                        `;
-                
-                        // Adiciona o select e o botão ao contêiner
-                        selectContainer.innerHTML = selectHtml + removeButtonHtml;
-                
-                        // Adiciona o contêiner ao elemento principal
-                        document.getElementById('select-container').appendChild(selectContainer);
-                
-                        // Habilita o botão de envio
-                        var sendFormButton = document.getElementById('send-form');
-                        sendFormButton.disabled = false;
+
+                        if (data.options.length > 0){
+
+                            // Incrementa o contador para criar IDs únicos
+                            if (typeof selectCounterSite === 'undefined') {
+                                window.selectCounterSite = 0; // Declara globalmente se não existir
+                            }
+                            selectCounterSite++;
+                            selectCounterAuthSubmit++;
+
+                            if (selectCounterAuthSubmit > 0) {
+                                // Habilita o elemento select
+                                //document.getElementById('send-form').disabled = false;
+                                var sendFormButton = document.getElementById('send-form');
+                                sendFormButton.disabled = false;
+                            }                
+                            // Cria um contêiner exclusivo para o select e o botão de remoção
+                            var selectContainerId = `select-container-site-${selectCounterSite}`;
+                            var selectContainer = document.createElement('div');
+                            selectContainer.id = selectContainerId;
+                            selectContainer.classList.add('flex', 'items-center', 'gap-2', 'mb-2'); // Adiciona classes de estilo (opcional)
+                    
+                            // Cria o select
+                            var selectHtml = `
+                                <select name="dynamic_selects_${selectCounterSite}" 
+                                        class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                                    ${data.options.map(option => `<option value="${option.value}">${option.label}</option>`).join('')}
+                                </select>
+                            `;
+                    
+                            // Cria o botão de remoção
+                            var removeButtonHtml = `
+                                <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
+                                        onclick="removeDynamicSelect('${selectContainerId}', 1)">
+                                    Remover
+                                </button>
+                            `;
+                    
+                            // Adiciona o select e o botão ao contêiner
+                            selectContainer.innerHTML = selectHtml + removeButtonHtml;
+                    
+                            // Adiciona o contêiner ao elemento principal
+                            document.getElementById('select-container').appendChild(selectContainer);
+                    
+                            // Habilita o botão de envio
+                            //var sendFormButton = document.getElementById('send-form');
+                            //sendFormButton.disabled = false;
+
+                        } else { // ELSE DO DATA.OPTIONS
+                            window.alert("Selected SITE does not have registered BUILDINGS!");
+                        } // ENDIF DO DATA.OPTIONS
+
                     } catch (error) {
-                        console.log('Erro ao obter opções do select:', error);
+                        console.log('Error getting SELECT options:', error);
                     }
                 })();
                 
@@ -314,7 +329,7 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         // Criar o botão de remoção
                         var removeButtonHtml = `
                             <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
-                                    onclick="removeDynamicSelect('${selectContainerId}')">
+                                    onclick="removeDynamicSelect('${selectContainerId}', 0)">
                                 Remover
                             </button>
                         `;
@@ -326,8 +341,8 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         document.getElementById('select-container-member').appendChild(selectContainer);
                 
                         // Desabilitar o botão de envio (se necessário)
-                        var sendFormButton = document.getElementById('send-form');
-                        sendFormButton.disabled = false;
+                        //var sendFormButton = document.getElementById('send-form');
+                        //sendFormButton.disabled = false;
                     } catch (error) {
                         console.log('Erro ao obter opções do select', error);
                     }
@@ -363,7 +378,7 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         // Cria o botão de remoção
                         var removeButtonHtml = `
                             <button type="button" class="text-red-500 border border-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-white"
-                                    onclick="removeDynamicSelect('${selectContainerId}')">
+                                    onclick="removeDynamicSelect('${selectContainerId}', 0)">
                                 Remover
                             </button>
                         `;
@@ -375,8 +390,8 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         document.getElementById('select-container-stakeholder').appendChild(selectContainer);
                 
                         // Habilita o botão de envio
-                        var sendFormButton = document.getElementById('send-form');
-                        sendFormButton.disabled = false;
+                        //var sendFormButton = document.getElementById('send-form');
+                        //sendFormButton.disabled = false;
                     } catch (error) {
                         console.log('Erro ao obter opções do select', error);
                     }
@@ -449,10 +464,19 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
 
 // Função para remover o contêiner do select 
 // Por enquanto funcionando no NEW
-function removeDynamicSelect(containerId) {
+function removeDynamicSelect(containerId, action) {
     var container = document.getElementById(containerId);
     if (container) {
         container.remove();
+        if (action === 1){
+            selectCounterAuthSubmit--;
+            if (selectCounterAuthSubmit <= 0){
+                selectCounterAuthSubmit = 0;
+                // Desabilita o elemento select
+                var sendFormButton = document.getElementById('send-form');
+                sendFormButton.disabled = true;
+            }
+        }
     }
 }
 

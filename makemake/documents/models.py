@@ -9,7 +9,6 @@ from makemake.buildings.models import Building
 from makemake.core.custom_functions import left_pad
 from makemake.core.choices import FILE_EXTENSION_CHOICES, DOCUMENT_STATUS_CHOICES
 
-
 class Document(models.Model):
     summary = models.TextField(default='', max_length=100)
     description = models.TextField(default='')
@@ -29,7 +28,7 @@ class Document(models.Model):
                                  )
     doctype = models.PositiveSmallIntegerField(null=False, default=None, choices=FILE_EXTENSION_CHOICES,)
     docstatus = models.PositiveSmallIntegerField(null=True, blank=True, default=0, choices=DOCUMENT_STATUS_CHOICES,)
-    #categories = models.ManyToManyField(Category, related_name='categories')
+    sequential = models.IntegerField(null=False, default=0,)
     categories = models.ForeignKey(Category,
                                    related_name='categories',
                                    on_delete=models.PROTECT,
@@ -42,6 +41,7 @@ class Document(models.Model):
         return self.summary
 
 class Version(models.Model):
+
     def create_path(instance, filename):
         return os.path.join(
             'upload/',
@@ -52,13 +52,11 @@ class Version(models.Model):
 
     def directory_path(self, filename):
         numproject = self.document.project.pk
-        #category = self.document.categories.get(Q(categories__project=numproject) & Q(category__isnull=True))
         category_code = self.document.categories.code
         building = self.document.building.number
         numproject = left_pad(numproject)
         building_number = left_pad(building)
         coding = str(self.document.project.year) + str(self.document.project.code)
-        #path = '{0}/{1}/{2}'.format(
         path = '{0}/{1}/{2}/{3}'.format(
             building_number,
             coding,
@@ -66,8 +64,8 @@ class Version(models.Model):
             filename
         )
         return path
-
-    version_number = models.IntegerField(default=1,)
+    
+    released = models.IntegerField(default=1,)
     changelog = models.TextField(default='',
                                  blank=True)
     upload_at = models.DateField(default=date.today,

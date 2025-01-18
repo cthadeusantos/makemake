@@ -16,7 +16,7 @@ class DocumentAdmin(admin.ModelAdmin):
 @admin.register(Version)
 class VersionAdmin(admin.ModelAdmin):
     list_display = (
-        'version_number',
+        'released',
         'changelog',
         'upload_at',
         'upload_url',

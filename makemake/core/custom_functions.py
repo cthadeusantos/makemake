@@ -109,8 +109,87 @@ def separar_valores_sem_espaco(string):
 
     return lista1, lista2
 
+
 """
 Valida CNPJ e CPF
+Function valid only Brazil
+Return: True or False
+"""
+def check_cpf_cnpj(numero):
+    numero = re.sub(r'\D', '', numero)  # Remove qualquer caractere que não seja dígito
+
+    if len(numero) == 11:
+        return check_cpf(numero)
+    elif len(numero) == 14:
+        return check_cnpj(numero)
+    else:
+        return False
+
+"""
+Checa CPF
+Function valid only Brazil
+Return: True or False
+"""
+def check_cpf(cpf):
+    if len(cpf) != 11 or not cpf.isdigit():
+        return False
+
+    # Calcula o primeiro dígito verificador
+    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+    primeiro_dv = (soma * 10 % 11) % 10
+
+    # Calcula o segundo dígito verificador
+    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+    segundo_dv = (soma * 10 % 11) % 10
+
+    return cpf[-2:] == f"{primeiro_dv}{segundo_dv}"
+
+"""
+Checa CNPJ
+Function valid only Brazil
+Return: True or False
+"""
+def check_cnpj(cnpj):
+    if len(cnpj) != 14 or not cnpj.isdigit():
+        return False
+
+    # Calcula o primeiro dígito verificador
+    soma = sum(int(cnpj[i]) * (5 if i < 4 else 9 - i % 8) for i in range(12))
+    primeiro_dv = (soma % 11)
+    if primeiro_dv < 2:
+        primeiro_dv = 0
+    else:
+        primeiro_dv = 11 - primeiro_dv
+
+    # Calcula o segundo dígito verificador
+    soma = sum(int(cnpj[i]) * (6 if i < 5 else 9 - i % 8) for i in range(13))
+    segundo_dv = (soma % 11)
+    if segundo_dv < 2:
+        segundo_dv = 0
+    else:
+        segundo_dv = 11 - segundo_dv
+
+    return cnpj[-2:] == f"{primeiro_dv}{segundo_dv}"
+
+def get_status_label(status_code, choices):
+    """Retorna a label associada a um status code.
+
+    Args:
+        status_code: O código do status a ser procurado.
+        choices: A tupla de choices.
+
+    Returns:
+        A label correspondente, ou None se não encontrada.
+    """
+
+    for choice in choices:
+        if choice[0] == status_code:
+            return choice[1]
+    return None
+
+"""
+Valida CNPJ e CPF (deprecated)
+Function valid only Brazil
 """
 def valida_cnpj_cpf(numero):
     # Remover caracteres não numéricos
@@ -137,7 +216,8 @@ def valida_cnpj_cpf(numero):
         return "Número não tem 11 ou 14 dígitos, não é CNPJ nem CPF válido"
 
 """
-Checa CNPJ
+Checa CNPJ (deprecated)
+Function valid only Brazil
 """
 def valida_cnpj(cnpj):
     # Algoritmo de validação de CNPJ
@@ -160,7 +240,8 @@ def valida_cnpj(cnpj):
     return True
 
 """
-Checa CPF
+Checa CPF(deprecated)
+Function valid only Brazil
 """
 def valida_cpf(cpf):
     # Algoritmo de validação de CPF
@@ -179,3 +260,9 @@ def valida_cpf(cpf):
         return False
     return True
 
+"""
+Substitui um trecho de uma string por outro
+"""
+def replace_string(string_original, string_substituicao, pattern):
+    string_modificada = pattern.sub(f'-{string_substituicao}', string_original)
+    return string_modificada
