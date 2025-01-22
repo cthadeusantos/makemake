@@ -181,34 +181,48 @@ def new(request, numproject=None):
             b2.save()
 
             # Save buildings
-            counter = 1
+            dynamic_keys = [
+                key for key in request.POST.keys()
+                if re.match(r'dynamic_selects_\d+', key)
+            ]
             keys = set()
-            while (value := request.POST.get('dynamic_selects_' + str(counter), '')) != '':
-                if value not in keys:
-                    # Logica para gravar
+            # Itera pelas chaves filtradas
+            for key in dynamic_keys:
+                value = request.POST.get(key)
+                if value and value not in keys:
+                    # Lógica para gravar
                     keys.add(value)
                     b2.buildings.add(Building.objects.get(pk=value))
-                counter += 1
-            
+
+
             # Save members
-            counter = 1
+            # Filtra todas as chaves que começam com 'dynamic_selects_members_' no POST
+            dynamic_keys = [
+                key for key in request.POST.keys()
+                if re.match(r'dynamic_selects_members_\d+', key)
+            ]
             keys = set()
-            while (value := request.POST.get('dynamic_selects_members_' + str(counter), '')) != '':
-                if value not in keys:
-                    # Logica para gravar
+            # Itera pelas chaves filtradas
+            for key in dynamic_keys:
+                value = request.POST.get(key)
+                if value and value not in keys:
+                    # Lógica para gravar
                     keys.add(value)
                     b2.members.add(User.objects.get(pk=value))
-                counter += 1
 
             # Save stakeholders
-            counter = 1
+            dynamic_keys = [
+                key for key in request.POST.keys()
+                if re.match(r'dynamic_selects_stakeholders_\d+', key)
+            ]
             keys = set()
-            while (value := request.POST.get('dynamic_selects_stakeholders_' + str(counter), '')) != '':
-                if value not in keys:
-                    # Logica para gravar
+            # Itera pelas chaves filtradas
+            for key in dynamic_keys:
+                value = request.POST.get(key)
+                if value and value not in keys:
+                    # Lógica para gravar
                     keys.add(value)
                     b2.stakeholders.add(User.objects.get(pk=value))
-                counter += 1
             
             pk = b2.pk
 

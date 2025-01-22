@@ -103,25 +103,52 @@
               </div>        
           </div>
           <div id="tab2" class="" x-show="openTab === 2">
-              <ul class="list-group">
-                  {% for name in project.buildings.all %}
-                  <li class="list-group-item">{{ name }}</li>
-                  {% endfor %}
-              </ul>
+              <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="min-w-full">
+                  <tbody>
+                    {% for name in project.buildings.all %}
+                      {% if forloop.counter|divisibleby:"2" %}
+                        <tr class="bg-gray-100"><td>{{ name }}</td></tr>
+                      {% else %}
+                        <tr class="bg-gray-300"><td>{{ name }}</td></tr>
+                      {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
           </div>
           <div id="tab3" class="" x-show="openTab === 3">
-            <ul class="list-group">
-              {% for username in project.members.all %}
-              <li class="list-group-item">{{ username }}</li>
-              {% endfor %}
-            </ul>
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+              <table class="min-w-full">
+                <tbody>
+                  {% for username in project.members.all %}
+                    {% if forloop.counter|divisibleby:"2" %}
+                      <tr class="bg-gray-100"><td>{{ username }}</td></tr>
+                    {% else %}
+                      <tr class="bg-gray-300"><td>{{ username }}</td></tr>
+                    {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+
           </div>
           <div id="tab4" class="" x-show="openTab === 4">
-            <ul class="list-group">
-              {% for username in project.stakeholders.all %}
-              <li class="list-group-item">{{ username }}</li>
-              {% endfor %}
-            </ul>
+
+          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table class="min-w-full">
+              <tbody>
+                {% for username in project.stakeholders.all %}
+                  {% if forloop.counter|divisibleby:"2" %}
+                    <tr class="bg-gray-100"><td>{{ username }}</td></tr>
+                  {% else %}
+                    <tr class="bg-gray-300"><td>{{ username }}</td></tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
       </div>
     </div>

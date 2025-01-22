@@ -343,6 +343,27 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         // Desabilitar o botão de envio (se necessário)
                         //var sendFormButton = document.getElementById('send-form');
                         //sendFormButton.disabled = false;
+                        
+                        // GAMBIARRA - DO IT A MACGYVER
+                        // Busca os dados do servidor usando fetch 
+                        // Forma fácil de ativar ou desativar o botão submit
+                        // Não estou a fim de pensar - domingão de manhã e com um sol da porra e um calor do c*******
+                        // Obtém o ID do site
+                        var siteId = document.getElementById('id_site').value;
+                        var response = await fetch("/projects/get-select-options/" + siteId + "/");
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição: ' + response.statusText);
+                        }
+                        var data = await response.json();
+
+                        if (data.options.length > 0){
+                            var sendFormButton = document.getElementById('send-form');
+                            sendFormButton.disabled = false;                            
+                        } else {
+                            var sendFormButton = document.getElementById('send-form');
+                            sendFormButton.disabled = true;
+                        }
+                        
                     } catch (error) {
                         console.log('Erro ao obter opções do select', error);
                     }
@@ -392,6 +413,26 @@ function addFormset(e, formsetContainer, addFormsetButton, tab, totalForms, form
                         // Habilita o botão de envio
                         //var sendFormButton = document.getElementById('send-form');
                         //sendFormButton.disabled = false;
+                                                // GAMBIARRA - DO IT A MACGYVER
+                        // Busca os dados do servidor usando fetch 
+                        // Forma fácil de ativar ou desativar o botão submit
+                        // Não estou a fim de pensar - domingão de manhã e com um sol da porra e um calor do c*******
+                        // Obtém o ID do site
+                        var siteId = document.getElementById('id_site').value;
+                        var response = await fetch("/projects/get-select-options/" + siteId + "/");
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição: ' + response.statusText);
+                        }
+                        var data = await response.json();
+
+                        if (data.options.length > 0){
+                            var sendFormButton = document.getElementById('send-form');
+                            sendFormButton.disabled = false;                            
+                        } else {
+                            var sendFormButton = document.getElementById('send-form');
+                            sendFormButton.disabled = true;
+                        }
+                        
                     } catch (error) {
                         console.log('Erro ao obter opções do select', error);
                     }
