@@ -1,7 +1,7 @@
 var selectCounterSite = 0;  // Inicializa um contador para IDs únicos
 var selectCounterMember = 0;  // Inicializa um contador para IDs únicos
 var selectCounterStakeholder = 0;  // Inicializa um contador para IDs únicos
-var selectCounterAuthSubmit = 0;  // Inicializa um contador para IDs únicos
+var selectCounterAuthSubmit = 0;  // Inicializa um contador para IDs únicos - ativa ou desativa o botão submit na página
 
 // A SER USADO FUTURAMENTE
 //const plusString = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -12,6 +12,25 @@ var selectCounterAuthSubmit = 0;  // Inicializa um contador para IDs únicos
 //  <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />
 //</svg>
 //`;
+
+// Main JS Code
+
+// Seleciona todos os elementos <select> na página
+const selects = document.querySelectorAll('select');
+    
+// Verifica se existem elementos com o padrão de name esperado
+selects.forEach((select) => {
+    const name = select.getAttribute('name');
+    
+    // Verifica se o name corresponde ao padrão "form-X-building"
+    if (/^form-\d+-building$/.test(name)) {
+    selectCounterAuthSubmit = 1;  // Inicializa um contador para IDs únicos
+    var sendFormButton = document.getElementById('send-form');
+    sendFormButton.disabled = false;
+    }
+});
+
+// JS - jquery auxiliaries functions
 
 async function fetchData(url) {
     return new Promise(function (resolve, reject) {
