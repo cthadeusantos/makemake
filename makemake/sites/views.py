@@ -2,9 +2,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 
-from makemake.sites.models import Site
-from makemake.sites.forms import SiteForm
-
 from django.db import IntegrityError
 from django.contrib import messages
 
@@ -12,6 +9,12 @@ from django.http import HttpResponse
 from django.views.generic import View
 
 from django.db.models import Q
+
+from makemake.sites.models import Site
+from makemake.sites.forms import SiteForm
+from makemake.core.custom_functions import update_object
+
+from auditlog.context import set_actor
 
 import re
 
@@ -115,7 +118,8 @@ def new(request):
             # Logica para gravar instância principal
             b2 = Site(name=a, place=b, )
             try:
-                b2.save()
+                with set_actor(request.user):
+                    b2.save()
             except IntegrityError as e:
                 #messages.add_message(request, messages.ERROR, 'There has been an error...')
                 form.add_error('code', 'Code category must be unique!')
@@ -129,6 +133,7 @@ def new(request):
     return render(request, 'sites/new_or_edit.html', context)
 
 
+
 def edit(request, pk=None):
     #extra_forms = 1  # You can set the initial number of forms here
     #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
@@ -140,10 +145,13 @@ def edit(request, pk=None):
             if form.is_valid():
                 a = form.cleaned_data['name']
                 b = form.cleaned_data['place']
-
-                # Logica para gravar instância principal
-                b2 = Site.objects.filter(pk=pk)
-                b2.update(name=a, place=b, )
+                # Lista de atributos do modelo Project
+                attributes = [
+                    "name", "place", 
+                ]
+                # Lista de valores correspondentes
+                values = [a, b,]
+                update_object(request, Site, pk, attributes, values)
 
         else: # Read data from 
             instance = Site.objects.get(pk=pk)

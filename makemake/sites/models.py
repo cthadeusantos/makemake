@@ -1,4 +1,5 @@
 from django.db import models
+from auditlog.registry import auditlog
 from makemake.core.choices import PLACES_CHOICES
 
 
@@ -20,3 +21,6 @@ class Site(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name[:1].upper() + self.name[1:]
         return super(Site, self).save(*args, **kwargs)
+    
+# Registrar o modelo para auditoria
+auditlog.register(Site)

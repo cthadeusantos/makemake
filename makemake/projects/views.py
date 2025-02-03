@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib import messages
 
@@ -17,12 +16,18 @@ from makemake.projects.models import Project
 from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, set_stakeholders_formset, set_buildings_formset
 from makemake.documents.models import Document
 
-from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco
+from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco, get_actor, update_object
+
+from auditlog.context import set_actor
+#from auditlog.models import LogEntry
+
+from makemake.core.custom_functions import get_client_ip, is_queryset_empty
+from makemake.projects.custom_functions import filter_dynamic_keys, save_m2m_relationships
+#from makemake.projects.signals import log_m2m_changes
 
 
 def void(request):
     return HttpResponseRedirect('')
-
 
 def search(request):
     # Expressão regular
@@ -77,36 +82,41 @@ def search(request):
             elif is_list_empty(and_list) and  not is_list_empty(or_list):
                 final_string = string_or
             items = Project.objects.filter(eval(final_string)).order_by('-year','-code')
-            
-            
-
     return render(request, 'projects/home.html', {'items': items})
 
-
+"""
+Initial homepage projects
+"""
 def home(request):
     items = Project.objects.all().order_by('-year','-code')
-    items = Project.objects.all().order_by('-year','-code')
+    print(get_client_ip(request))
     return render(request, 'projects/home.html', {'items': items})
 
-
+"""
+Delete a project 
+"""
 def delete(request, pk):
     project = Project.objects.get(pk=pk)
-    condition1 = len(has_linked_documents(project))
-    if condition1:
-        messages.error(request, f"Não foi possível apagar o registro: {project.name}")
-    else:
+    if is_queryset_empty(has_linked_documents(project)):
         try:
-            project.delete()
-            messages.success(request, f"Registro {project.name} apagado com sucesso.")
+            with set_actor(request.user):
+                project.delete()
+                messages.success(request, f"Registro {project.name} apagado com sucesso.")
         except:
-            messages.error(request, f"Não foi possível apagar o registro: {project.name}")
+            messages.error(request, f"Não foi possível apagar o registro: {project.name}") 
+    else:
+        messages.error(request, f"Não foi possível apagar o registro: {project.name}")
 
     return home(request)
 
-
+"""
+Check if a project has linked documents
+"""
 def has_linked_documents(value):
     return Document.objects.select_related('project').filter(project=value)
 
+# def is_queryset_empty(queryset):
+#     return not queryset.exists()
 
 def details(request, pk):
     # Get project
@@ -119,6 +129,9 @@ def details(request, pk):
     context = {'project': project}
     return render(request, 'projects/details.html', context)
 
+"""
+Função de apoio a consulta javascript
+"""
 def get_select_options(request, pk):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -133,7 +146,9 @@ def get_select_options(request, pk):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
-
+"""
+Função de apoio a consulta javascript
+"""
 def get_select_users(request):
     # Simulando dados da opção do select da base de dados
     options = [
@@ -147,14 +162,14 @@ def get_select_users(request):
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
 
+"""
+Add new projects and your references
+"""
 def new(request, numproject=None):
-    #extra_forms = 1  # You can set the initial number of forms here
-    #ProjectBuildingFormSet = formset_factory(ProjectBuildingForm, extra=extra_forms)
 
     if request.method == 'POST':    # Newly filled form
         project_form = ProjectForm(request.POST, prefix='repost')
 
-        #if project_form.is_valid() and building_formset.is_valid():
         if project_form.is_valid():
             a = project_form.cleaned_data['code']
             b = project_form.cleaned_data['year']
@@ -169,6 +184,12 @@ def new(request, numproject=None):
             k = project_form.cleaned_data['remarks']
             l = project_form.cleaned_data['project_status']
 
+            dict_auxiliary = {'buildings': [], 'members': [], 'stakeholders': []}
+            filter_dynamic_keys(r'dynamic_selects_\d+$', 'buildings', Building, request, dict_auxiliary)
+            filter_dynamic_keys(r'dynamic_selects_members_\d+$', 'members', User, request, dict_auxiliary)
+            filter_dynamic_keys(r'dynamic_selects_stakeholders_\d+$', 'stakeholders', User, request,  dict_auxiliary)
+
+            # Define new code
             register = None
             # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
             while Project.objects.filter(code=a, year=b).exists():
@@ -176,61 +197,30 @@ def new(request, numproject=None):
                 a += 1
                 register = a
 
-            # Logica para gravar instância principal
-            b2 = Project(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, project_status=l, interlocutor=j, remarks=k)
-            b2.save()
+            # save registers
+            pk = None
+            with set_actor(request.user):
+                b2 = Project(
+                    code=a, year=b, name=c, description=d,
+                    created_at=e, updated_at=f, project_manager=h,
+                    project_manager_support=i, project_status=l,
+                    interlocutor=j, remarks=k
+                )
+                b2.save()
 
-            # Save buildings
-            dynamic_keys = [
-                key for key in request.POST.keys()
-                if re.match(r'dynamic_selects_\d+', key)
-            ]
-            keys = set()
-            # Itera pelas chaves filtradas
-            for key in dynamic_keys:
-                value = request.POST.get(key)
-                if value and value not in keys:
-                    # Lógica para gravar
-                    keys.add(value)
-                    b2.buildings.add(Building.objects.get(pk=value))
+                items_m2m = {key: value for key, value in dict_auxiliary.items() if value}
+                save_m2m_relationships(b2, items_m2m, get_actor(request))
+                pk = b2.pk
 
-
-            # Save members
-            # Filtra todas as chaves que começam com 'dynamic_selects_members_' no POST
-            dynamic_keys = [
-                key for key in request.POST.keys()
-                if re.match(r'dynamic_selects_members_\d+', key)
-            ]
-            keys = set()
-            # Itera pelas chaves filtradas
-            for key in dynamic_keys:
-                value = request.POST.get(key)
-                if value and value not in keys:
-                    # Lógica para gravar
-                    keys.add(value)
-                    b2.members.add(User.objects.get(pk=value))
-
-            # Save stakeholders
-            dynamic_keys = [
-                key for key in request.POST.keys()
-                if re.match(r'dynamic_selects_stakeholders_\d+', key)
-            ]
-            keys = set()
-            # Itera pelas chaves filtradas
-            for key in dynamic_keys:
-                value = request.POST.get(key)
-                if value and value not in keys:
-                    # Lógica para gravar
-                    keys.add(value)
-                    b2.stakeholders.add(User.objects.get(pk=value))
-            
-            pk = b2.pk
-
-            # Mesmo código que o método details
-            project = Project.objects.get(pk=pk) # Mesmo código que o método details
-            context = {'project': project, 'register': register} # Mesmo código que o método details
-            return render(request, 'projects/details.html', context) # Mesmo código que o método details
-
+            if pk is not None:
+                # Mesmo código que o método details
+                project = Project.objects.get(pk=pk) 
+                context = {'project': project, 'register': register} 
+                return render(request, 'projects/details.html', context)
+            else:   # OOPS! Some error ocurred 
+                project = Project()
+                context = {'project': project, 'register': register}
+                return render(request, 'page_error.html', context) 
     else: # Empty new form
         project_form = ProjectForm(prefix='new')
 
@@ -238,6 +228,9 @@ def new(request, numproject=None):
                'numproject': numproject,
                }
     return render(request, 'projects/new_or_edit.html', context)
+
+
+
 
 def edit(request, pk=None):
     numproject = pk
@@ -262,68 +255,50 @@ def edit(request, pk=None):
             l = project_form.cleaned_data['project_status']
 
             register = a
-            # # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
-            # while Project.objects.filter(code=a, year=b).exists():
-            #     # Existe, tenta o próximo disponível
-            #     a += 1
-            #     register = a
-
-            # Logica para gravar instância principal
-            b2 = Project.objects.filter(pk=pk)
-            b2.update(code=a, year=b, name=c, description=d, created_at=e, updated_at=f, project_manager=h, project_manager_support=i, project_status=l, interlocutor=j, remarks=k)
-            #b2.save()
-            b2 = Project.objects.get(pk=pk)
-
-            # Save buildings
-            keys = set()
-            query = list(b2.buildings.values_list('id', flat=True))
-            for id in query:
-                keys.add(id)
             
-            # Usar expressão regular para selecionar as chaves desejadas
-            chaves_selecionadas1 = [chave for chave in chaves if re.match(r'form-\d+-building', chave)]
-            chaves_selecionadas2 = [chave for chave in chaves if re.match(r'dynamic_selects_\d+', chave)]
-            chaves_selecionadas = chaves_selecionadas1 + chaves_selecionadas2
-            for value in chaves_selecionadas:
-                value = int(request.POST.get(value,''))
-                if value not in keys:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.buildings.add(Building.objects.get(pk=value))
-            
-            # Save members
-            keys = set()
-            query = list(b2.members.values_list('id', flat=True))
-            for id in query:
-                keys.add(id)
-            # Usar expressão regular para selecionar as chaves desejadas
-            chaves_selecionadas1 = [chave for chave in chaves if re.match(r'form-\d+-members', chave)]
-            chaves_selecionadas2 = [chave for chave in chaves if re.match(r'dynamic_selects_members_\d+', chave)]
-            chaves_selecionadas = chaves_selecionadas1 + chaves_selecionadas2
-            for value in chaves_selecionadas:
-                value = int(request.POST.get(value,''))
-                if value not in keys:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.members.add(User.objects.get(pk=value))
+            # Lista de atributos do modelo Project
+            attributes = [
+                "code", "year", "name", "description", "created_at", "updated_at",
+                "project_manager", "project_manager_support", "project_status",
+                "interlocutor", "remarks"
+            ]
 
-            # Save stakeholders
-            keys = set()
-            query = list(b2.stakeholders.values_list('id', flat=True))
-            for id in query:
-                keys.add(id)
-                
+            # Lista de valores correspondentes
+            values = [a, b, c, d, e, f, h, i, l, j, k]
+
+            # Update the OBJECT
+            b2 = update_object(request, Project, pk, attributes, values)
+
+            # Filter buildings
             # Usar expressão regular para selecionar as chaves desejadas
-            chaves_selecionadas1 = [chave for chave in chaves if re.match(r'form-\d+-stakeholders', chave)]
-            chaves_selecionadas2 = [chave for chave in chaves if re.match(r'dynamic_selects_stakeholders_\d+', chave)]
-            chaves_selecionadas = chaves_selecionadas1 + chaves_selecionadas2
-            
-            for value in chaves_selecionadas:
-                value = int(request.POST.get(value,''))
-                if value not in keys:
-                    # Logica para gravar
-                    keys.add(value)
-                    b2.stakeholders.add(User.objects.get(pk=value))
+            dict_auxiliary = {'buildings': [], 'members': [], 'stakeholders': []}
+            filter_dynamic_keys(r'dynamic_selects_\d+$', "buildings", Building, request, dict_auxiliary)
+            filter_dynamic_keys(r'form-\d+-building$', "buildings", Building, request, dict_auxiliary)
+            filter_dynamic_keys(r'dynamic_selects_members_\d+$', "members", User, request, dict_auxiliary)
+            filter_dynamic_keys(r'form-\d+-members$', "members", User, request, dict_auxiliary)
+            filter_dynamic_keys(r'dynamic_selects_stakeholders_\d+$', "stakeholders", User, request, dict_auxiliary)
+            filter_dynamic_keys(r'form-\d+-stakeholders$', "stakeholders", User, request, dict_auxiliary)
+
+            items_m2m  = dict()
+            change = False
+            for key, value in dict_auxiliary.items():
+                for instance in dict_auxiliary[key]:
+                    if key=='buildings':
+                        queryset = Project.objects.get(pk=pk).buildings.filter(pk=instance.pk)
+                    elif key=='members':
+                        queryset = Project.objects.get(pk=pk).members.filter(pk=instance.pk)
+                    elif key=='stakeholders':
+                        queryset = Project.objects.get(pk=pk).stakeholders.filter(pk=instance.pk)
+                    if not len(queryset):
+                        if key not in items_m2m:
+                            items_m2m[key]=list()
+                        items_m2m[key].append(instance)
+                        change = True
+                    
+            #items_m2m = {key: value for key, value in dict_auxiliary.items() if value} # Build dictionary with values formatted to 
+            if change:
+                save_m2m_relationships(b2, items_m2m, get_actor(request))
+
             pk = b2.pk
 
             # Mesmo código que o método details
@@ -352,3 +327,6 @@ def edit(request, pk=None):
                'buildings_formset': buildings_formset, 'members_formset': members_formset,
                'stakeholders_formset': stakeholders_formset,}
     return render(request, 'projects/new_or_edit.html', context)
+
+
+

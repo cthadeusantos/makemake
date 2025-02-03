@@ -2,6 +2,9 @@ from datetime import date
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
+from auditlog.registry import auditlog
+
 from makemake.core.choices import BUILDING_STATUS_CHOICES
 #from makemake.projects.models import Project
 from makemake.sites.models import Site
@@ -29,3 +32,6 @@ class Building(models.Model):
 
     def __str__(self):
         return self.name
+
+# Registrar o modelo para auditoria
+auditlog.register(Building)

@@ -9,7 +9,6 @@ from django.contrib.auth.forms import UserCreationForm
 
 from makemake.core.forms import LoginForm
 
-
 def home(request):
     return render(request, 'core/index.html')
 

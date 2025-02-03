@@ -1,6 +1,6 @@
 # Makemake
 
-Please be advise! That is a working in progress!
+Please be advised! That is a working in progress!
 
 ## 1. Project Control Application
 
@@ -30,7 +30,7 @@ This application was developed to offer comprehensive control over projects, fro
 * Insertion and use of these materials and services in the project budgets.
 
 **Technologies Used**
-- **Programming Language**: Python 3 (>3.10), Javascript (> ECMAScript 2018)
+- **Programming Language**: Python 3 (>= 3.10), Javascript (>= ECMAScript 2018)
 - **Markup language**: HTML 5 (is mandatory)
 - **Framework**: Django 5.1 (is mandatory)
 

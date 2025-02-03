@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from typing import Any
 from datetime import date, datetime
 
+from auditlog.registry import auditlog
+
 from makemake.buildings.models import Building
 #from makemake.agreements.models import Agreement
 
@@ -39,3 +41,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+# Registrar o modelo para auditoria
+auditlog.register(Project)

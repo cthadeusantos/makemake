@@ -63,6 +63,8 @@ class Version(models.Model):
             category_code,
             filename
         )
+        # for future (works at any SO)
+        # path = os.path.normpath(os.path.join(building_number, coding, category_code, filename))
         return path
     
     released = models.IntegerField(default=1,)

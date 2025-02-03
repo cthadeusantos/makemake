@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'test_without_migrations',
     'django_extensions',
     #'django_htmx',  # HTMX
+    'auditlog',
     'makemake.myfilters',
     'makemake.core',
     'makemake.profiles',
@@ -70,6 +71,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.LoginRequiredMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'django_htmx.middleware.HtmxMiddleware',  # HTMX
+    'makemake.core.middleware.AuditlogUserMiddleware',
+    'makemake.core.middleware.AuditLogMiddleware',
+    'makemake.core.middleware.InactivityLogoutMiddleware',
 ]
 
 ROOT_URLCONF = 'makemake.urls'
@@ -157,7 +161,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "login/"  # new
 
 # The age of session cookies, in seconds
-SESSION_COOKIE_AGE=28800 # 8 hours
+SESSION_COOKIE_AGE=3600 # 1 hours
 
 # determines whether session cookies persist even after the browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE=True

@@ -1,4 +1,5 @@
 import re
+from auditlog.context import set_actor
 
 def left_pad(number=0, digits=4, char='0'):
     assert (number >= 0), "Sorry, no numbers below zero"
@@ -266,3 +267,54 @@ Substitui um trecho de uma string por outro
 def replace_string(string_original, string_substituicao, pattern):
     string_modificada = pattern.sub(f'-{string_substituicao}', string_original)
     return string_modificada
+
+def get_client_ip(request):
+    """Função para obter o IP do cliente."""
+    if not request:
+        return "Unknown IP"
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR", "")
+    return ip
+
+# def get_actor(request):
+#     """Obtém o usuário que realizou a ação."""
+#     if request.user.is_authenticated:
+#         return request.username
+#     return None
+
+def get_actor(request):
+    """Obtém o usuário que realizou a ação."""
+    if request.user.is_authenticated:
+        return request.user
+    return None
+
+def is_queryset_empty(queryset):
+    return not queryset.exists()
+
+def update_object(request, model, object_pk, attributes, values):
+    """Atualiza um objeto e registra a ação no auditlog."""
+
+    with set_actor(request.user):
+        change = False
+        try:
+            # Seek the object by its primary key
+            obj = model.objects.get(pk=object_pk)  # Agora usa o modelo passado como parâmetro
+        except model.DoesNotExist:
+            return  # lance uma exceção, dependendo do seu caso
+
+        # Update fields individually
+        # Updating only attributes that have changed
+        # Combining attributes and variables
+        for attr, value in zip(attributes, values):
+            if getattr(obj, attr) != value:
+                setattr(obj, attr, value)
+                change = True
+
+        if change:
+            obj.save()
+
+        return obj
+
