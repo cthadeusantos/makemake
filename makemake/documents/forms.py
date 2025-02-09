@@ -36,20 +36,32 @@ class DocumentForm2(forms.Form):
                                  widget=forms.DateInput(attrs={'name': 'updated_at',
                                                                'type': 'date',
                                                                'class': CSS_CHARFIELD_1,
-                                                               'readonly': 'true'}))
+                                                               'readonly': 'true'
+                                                               }))
     doctype = ChoiceField(choices=FILE_EXTENSION_CHOICES, required=True, label="Document type", widget=forms.Select(attrs={'class': CSS_SELECT_1}))
     docstatus = ChoiceField(choices=DOCUMENT_STATUS_CHOICES, required=True, label="Document status", widget=forms.Select(attrs={'class': CSS_SELECT_1}))
-    building = ModelChoiceField(queryset=Building.objects.all(), required=True, widget=forms.Select(attrs={'class': CSS_SELECT_1}))
+    building = ModelChoiceField(queryset=Building.objects.none(), required=True, widget=forms.Select(attrs={'class': CSS_SELECT_1}))
     categories = ModelChoiceField(queryset=Category.objects.all(), required=True, widget=forms.Select(attrs={'class': CSS_SELECT_1}))
     
     def __init__(self, *args, **kwargs):
-        value = kwargs.pop('numproject', None)
         string = kwargs.pop('prefix', None)
         instance = kwargs.pop('instance', None)
+        value = kwargs.pop('numproject', None)
+        if instance:
+            value = instance.project.pk
+        pk = kwargs.pop('pk', None)
         self.id_building = kwargs.pop('building', None)
+        
         super(DocumentForm2, self).__init__(*args, **kwargs)
+
+        # Obtém os edifícios relacionados ao projeto
+        # Método 1
+        #project = Project.objects.get(pk=value)  # Obtém o projeto pelo ID
+        #self.fields['building'].queryset = project.buildings.all()
+        # Método 2
+        self.fields['building'].queryset = Building.objects.filter(buildings__id=value)
+        
         if string == 'new':
-            self.fields['building'].queryset = Building.objects.filter(buildings__id=value)
             self.fields['categories'].queryset = Category.objects.all()
             self.fields['created_at'].initial = datetime.today()
             self.fields['updated_at'].initial = datetime.today()
@@ -62,8 +74,14 @@ class DocumentForm2(forms.Form):
             self.fields['updated_at'].initial = datetime.today()
             self.fields['doctype'].initial = instance.doctype
             self.fields['docstatus'].initial = instance.docstatus
-            self.fields['building'].disabled = True
-            self.fields['categories'].disabled = True
+
+            # Disabled fields if there is a version
+            query = Version.objects.filter(document=instance).exists()
+            if query:
+                self.fields['doctype'].disabled = True
+                self.fields['docstatus'].disabled = True
+                self.fields['building'].disabled = True
+                self.fields['categories'].disabled = True
     
 class VersionForm(forms.Form):
     released = forms.IntegerField(label='Version',
@@ -95,15 +113,10 @@ class VersionForm(forms.Form):
         instance = kwargs.pop('instance', None)
         super().__init__(*args, **kwargs)
         today_is = datetime.today()
-        document = Document.objects.get(pk=pk)
-        #version = Version.objects.filter(document=document).last()
+        #document = Document.objects.get(pk=pk)
         version = last_number
+
         self.fields['released'].initial = version
-        #self.fields['changelog'].initial = changelog
-        # if version is None:
-        #     self.fields['released'].initial = 1
-        # else:
-        #     self.fields['released'].initial = version.released + 1
         self.fields['upload_at'].initial = today_is  # or timezone aware equivalent
         if instance:
             self.fields['changelog'].initial = instance.changelog
@@ -111,28 +124,3 @@ class VersionForm(forms.Form):
         #self.fields['upload_at'].disabled = True
         #self.fields['released'].disabled = True
         #self.fields['upload_url'].widget.attrs.update({'type': 'file'})
-
-# class ComboboxCategoryForm(forms.Form):
-#     category = forms.ModelChoiceField(
-#         queryset=Category.objects.filter(category__isnull=True),
-#         required=False,
-#     )
-
-# class ComboboxSubCategoryForm(forms.Form):
-#     category = forms.ModelChoiceField(
-#         queryset=Category.objects.filter(category__isnull=False),
-#         required=False,
-#     )
-
-# class ComboboxBuildingForm(forms.Form):
-#     building = forms.ModelChoiceField(
-#         queryset=Building.objects.all(),
-#         required=False,
-#     )
-
-# DocCategoryFormSet = formset_factory(ComboboxCategoryForm, extra=1)
-# DocBuildingFormSet = formset_factory(ComboboxBuildingForm, extra=1)
-
-
-
-

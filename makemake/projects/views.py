@@ -16,7 +16,7 @@ from makemake.projects.models import Project
 from makemake.projects.forms import UserForm, MembersForm, set_MembersFormSet, set_stakeholders_formset, set_buildings_formset
 from makemake.documents.models import Document
 
-from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco, get_actor, update_object
+from makemake.core.custom_functions import is_list_empty, separar_valores_com_espaco, separar_valores_sem_espaco, get_actor, create_or_update_object
 
 from auditlog.context import set_actor
 #from auditlog.models import LogEntry
@@ -115,9 +115,6 @@ Check if a project has linked documents
 def has_linked_documents(value):
     return Document.objects.select_related('project').filter(project=value)
 
-# def is_queryset_empty(queryset):
-#     return not queryset.exists()
-
 def details(request, pk):
     # Get project
     project = Project.objects.get(pk=pk)
@@ -140,8 +137,10 @@ def get_select_options(request, pk):
         # Adicione mais opções conforme necessário
     ]
     site = Site.objects.get(pk=pk)
+
     # Fetch data from the database
     queryset = Building.objects.filter(site=site)
+
     # Convert the queryset to a list of dictionaries
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
@@ -156,8 +155,10 @@ def get_select_users(request):
         {'value': '2', 'label': 'Opção 2'},
         # Adicione mais opções conforme necessário
     ]
+
     # Fetch data from the database
     queryset = User.objects.all()
+
     # Convert the queryset to a list of dictionaries
     options = [{'value': item.id, 'label': str(item)} for item in queryset]
     return JsonResponse({'options': options})
@@ -171,18 +172,20 @@ def new(request, numproject=None):
         project_form = ProjectForm(request.POST, prefix='repost')
 
         if project_form.is_valid():
-            a = project_form.cleaned_data['code']
-            b = project_form.cleaned_data['year']
-            c = project_form.cleaned_data['name']
-            d = project_form.cleaned_data['description']
-            e = project_form.cleaned_data['created_at']
-            f = project_form.cleaned_data['updated_at']
-            g = project_form.cleaned_data['site']
-            h = project_form.cleaned_data['project_manager']
-            i = project_form.cleaned_data['project_manager_support']
-            j = project_form.cleaned_data['interlocutor']
-            k = project_form.cleaned_data['remarks']
-            l = project_form.cleaned_data['project_status']
+            data = {
+                "code": project_form.cleaned_data['code'],
+                "year": project_form.cleaned_data['year'],
+                "name": project_form.cleaned_data['name'],
+                "description": project_form.cleaned_data['description'],
+                "created_at": project_form.cleaned_data['created_at'],
+                "updated_at": project_form.cleaned_data['updated_at'],
+                "site": project_form.cleaned_data['site'],
+                "project_manager": project_form.cleaned_data['project_manager'],
+                "project_manager_support": project_form.cleaned_data['project_manager_support'],
+                "interlocutor":project_form.cleaned_data['interlocutor'],
+                "remarks": project_form.cleaned_data['remarks'],
+                "project_status": project_form.cleaned_data['project_status'],
+            }
 
             dict_auxiliary = {'buildings': [], 'members': [], 'stakeholders': []}
             filter_dynamic_keys(r'dynamic_selects_\d+$', 'buildings', Building, request, dict_auxiliary)
@@ -192,7 +195,8 @@ def new(request, numproject=None):
             # Define new code
             register = None
             # Verifica se já existe uma entrada com a mesma combinação de 'code' e 'year'
-            while Project.objects.filter(code=a, year=b).exists():
+            a = data['code']
+            while Project.objects.filter(code=data['code'], year=data['year']).exists():
                 # Existe, tenta o próximo disponível
                 a += 1
                 register = a
@@ -200,13 +204,7 @@ def new(request, numproject=None):
             # save registers
             pk = None
             with set_actor(request.user):
-                b2 = Project(
-                    code=a, year=b, name=c, description=d,
-                    created_at=e, updated_at=f, project_manager=h,
-                    project_manager_support=i, project_status=l,
-                    interlocutor=j, remarks=k
-                )
-                b2.save()
+                b2 = create_or_update_object(request, Project, data)
 
                 items_m2m = {key: value for key, value in dict_auxiliary.items() if value}
                 save_m2m_relationships(b2, items_m2m, get_actor(request))
@@ -229,9 +227,6 @@ def new(request, numproject=None):
                }
     return render(request, 'projects/new_or_edit.html', context)
 
-
-
-
 def edit(request, pk=None):
     numproject = pk
     if request.method == 'POST':    # Newly filled form
@@ -241,33 +236,22 @@ def edit(request, pk=None):
 
         #if project_form.is_valid() and building_formset.is_valid():
         if project_form.is_valid():
-            a = project_form.cleaned_data['code']
-            b = project_form.cleaned_data['year']
-            c = project_form.cleaned_data['name']
-            d = project_form.cleaned_data['description']
-            e = project_form.cleaned_data['created_at']
-            f = project_form.cleaned_data['updated_at']
-            g = project_form.cleaned_data['site']
-            h = project_form.cleaned_data['project_manager']
-            i = project_form.cleaned_data['project_manager_support']
-            j = project_form.cleaned_data['interlocutor']
-            k = project_form.cleaned_data['remarks']
-            l = project_form.cleaned_data['project_status']
-
-            register = a
-            
-            # Lista de atributos do modelo Project
-            attributes = [
-                "code", "year", "name", "description", "created_at", "updated_at",
-                "project_manager", "project_manager_support", "project_status",
-                "interlocutor", "remarks"
-            ]
-
-            # Lista de valores correspondentes
-            values = [a, b, c, d, e, f, h, i, l, j, k]
+            data = {
+                "code": project_form.cleaned_data['code'],
+                "year": project_form.cleaned_data['year'],
+                "name": project_form.cleaned_data['name'],
+                "description": project_form.cleaned_data['description'],
+                "updated_at": project_form.cleaned_data['updated_at'],
+                "project_manager": project_form.cleaned_data['project_manager'],
+                "project_manager_support": project_form.cleaned_data['project_manager_support'],
+                "project_status": project_form.cleaned_data['project_status'],
+                "interlocutor":project_form.cleaned_data['interlocutor'],
+                "remarks": project_form.cleaned_data['remarks'],
+            }
 
             # Update the OBJECT
-            b2 = update_object(request, Project, pk, attributes, values)
+            register = data['code']
+            b2 = create_or_update_object(request, Project, data, pk)
 
             # Filter buildings
             # Usar expressão regular para selecionar as chaves desejadas
@@ -298,7 +282,6 @@ def edit(request, pk=None):
             #items_m2m = {key: value for key, value in dict_auxiliary.items() if value} # Build dictionary with values formatted to 
             if change:
                 save_m2m_relationships(b2, items_m2m, get_actor(request))
-
             pk = b2.pk
 
             # Mesmo código que o método details
@@ -311,7 +294,6 @@ def edit(request, pk=None):
         project_form = ProjectForm(instance=instance, prefix='edit')
     
     project_profile = Project.objects.get(pk=numproject)
-    #project_form = ProjectForm(instance=project_profile, pk=numproject)
     members_formset = set_MembersFormSet(project_profile)
     stakeholders_formset = set_stakeholders_formset(project_profile)
     

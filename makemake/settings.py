@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 # Configuração para mensagens
+import os
 from django.contrib.messages import constants as message_constants
 
 from pathlib import Path
@@ -149,6 +150,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = str(BASE_DIR / 'staticfiles')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # Adiciona a pasta estática global
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

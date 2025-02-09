@@ -596,14 +596,3 @@ removeButtons.forEach(button => {
         parentDiv.remove(); 
     });
 });
-
-
-// Função para remover todos os atributos 'disabled' de um elemento HTML
-function removerDisabled(htmlString) {
-    return htmlString.replace(/disabled=""/g, '');
-}
-
-// Função para remover todos os atributos 'disabled' de um elemento HTML
-function removerHidden(htmlString) {
-    return htmlString.replace(/hidden=""/g, '');
-}

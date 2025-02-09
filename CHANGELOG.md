@@ -12,6 +12,14 @@
 * Added Inactivity Logout Middleware in settings.py and middleware.py
 * Site app with first LogAudit functions
 * Resetting resetting activity logout time and added new middleware InactivityLogoutMiddleware
+* STATIC folder added at root project and settings.py updated
+* global.js file created to JS folder at STATIC folder in root project
+* JS function enableAllFields() added to global.js
+* JS functions remove disabled and hidden attributes removed from project.js and enabledFields in documens.js (replace for enableAllFields)
+* In custom_functions.py renamed create_objects to create_or_update_object and updated it
+* global.js added to documents and projects templates
+* Refactoring views and forms at projects and documents
+* document.js updated to accept new buttons and inputs' names
 
 ## 0.1.2 (2025/01/23)
 * Fixed the case where removing initial items from buildings, users and interested parties caused records not to be added.

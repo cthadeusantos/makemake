@@ -51,34 +51,10 @@ def separar_valores_com_espaco(string):
     
     return lista1, lista2
 
+
 """
 Divide as palavras de uma string de acordo com & e |, remove espaços do início e fim das palavras
 """
-# def separar_valores_sem_espaco(string):
-#     # Verifica se a string contém '&' ou '|'
-#     if '&' in string and '|' in string:
-#         # Caso existam ambos, separamos por '&'
-#         lista1 = [valor.strip() for valor in re.findall(r'[^&|]+(?=&)', string)]
-#         lista2 = [valor.strip() for valor in re.findall(r'[^&|]+(?=\|)', string)]
-#     elif '&' in string:
-#         # Se existirem apenas '&', separamos por '&'
-#         lista1 = [valor.strip() for valor in re.findall(r'[^&]+', string)]
-#         lista2 = []
-#     elif '|' in string:
-#         # Se existirem apenas '|', separamos por '|'
-#         lista1 = []
-#         lista2 = [valor.strip() for valor in re.findall(r'[^|]+', string)]
-#     elif ' ' in string:
-#         lista1 = string.split(' ')
-#         lista2 = []
-#     else:
-#         # Se não houver '&' ou '|', retornamos listas vazias
-#         #lista1 = string.split(' ')
-#         lista1 = []
-#         lista2 = []
-    
-#     return lista1, lista2
-
 def separar_valores_sem_espaco(string):
     # Remove dois ou mais espaços consecutivos da string
     string = re.sub(r'\s{2,}', ' ', string).strip()
@@ -279,12 +255,6 @@ def get_client_ip(request):
         ip = request.META.get("REMOTE_ADDR", "")
     return ip
 
-# def get_actor(request):
-#     """Obtém o usuário que realizou a ação."""
-#     if request.user.is_authenticated:
-#         return request.username
-#     return None
-
 def get_actor(request):
     """Obtém o usuário que realizou a ação."""
     if request.user.is_authenticated:
@@ -294,27 +264,46 @@ def get_actor(request):
 def is_queryset_empty(queryset):
     return not queryset.exists()
 
-def update_object(request, model, object_pk, attributes, values):
-    """Atualiza um objeto e registra a ação no auditlog."""
+"""
+Atualiza um objeto e registra a ação no auditlog.
+Args:
+    request: Requisição Django
+    model: Modelo Django
+    data: Dicionário com atributos e valores
+    object_pk: ID do objeto (opcional)
+"""
+def create_or_update_object(request, model, data, object_pk=None):
+    if object_pk is None:
+        with set_actor(request.user):
+            try:
+                obj = model()
+                for attr, value in data.items():
+                    if hasattr(model, attr):
+                        setattr(obj, attr, value)
+                    else:
+                        print(f"Aviso: Campo '{attr}' não existe no modelo")
+                obj.save()
+                return obj
+            except Exception as e:
+                print(f"Erro ao criar instância: {str(e)}")
+                return None
 
     with set_actor(request.user):
-        change = False
         try:
-            # Seek the object by its primary key
-            obj = model.objects.get(pk=object_pk)  # Agora usa o modelo passado como parâmetro
+            obj = model.objects.get(pk=object_pk)
         except model.DoesNotExist:
-            return  # lance uma exceção, dependendo do seu caso
+            return None
 
-        # Update fields individually
-        # Updating only attributes that have changed
-        # Combining attributes and variables
-        for attr, value in zip(attributes, values):
-            if getattr(obj, attr) != value:
-                setattr(obj, attr, value)
-                change = True
+        change = False
+        for attr, value in data.items():
+            if hasattr(obj, attr):
+                current_value = getattr(obj, attr)
+                if current_value != value:
+                    setattr(obj, attr, value)
+                    change = True
+            else:
+                print(f"Aviso: Campo '{attr}' não existe no modelo")
 
         if change:
             obj.save()
-
         return obj
-

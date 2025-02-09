@@ -29,24 +29,16 @@
 
 {% block content %}
 
-{% comment %} <form action="." method="post">
-    {% csrf_token %} {% endcomment %}
     <div class="w-full">
         <form class="w-full" role="form" method="post" id="add-form">
             {% csrf_token %}
             {{ form.as_p }}
-            <input id="send-form" type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="removeDisabled()">
+            <!-- <input id="send-form" type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="removeDisabled()"> -->
+            <input id="send-form" type="submit" value="Submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         </form>
     </div> <!-- FLUID -->
-    
-{% comment %} </form> {% endcomment %}
-<script>
-    function removeDisabled() {
-        document.getElementById("id_building").removeAttribute("disabled");
-        document.getElementById("id_categories").removeAttribute("disabled");
-    }
-</script>
 
-<p style="font-size:0.775em">module: documents-new_or_edit-2024.09</p>
-
+<p style="font-size:0.775em">module: documents-new_or_edit-2025.02</p>
+<script src="{% static 'js/global.js' %}"></script>
+<script src="{% static 'js/document.js' %}"></script>
 {% endblock %}

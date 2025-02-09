@@ -4,7 +4,8 @@ from django.forms import ModelChoiceField
 from django.utils import formats
 from django.db.models import Q, F, Window, Subquery
 from django.db.models.functions import RowNumber
-from django.db import IntegrityError, FieldError
+from django.db import IntegrityError
+from django.core.exceptions import FieldError    
 
 from django.contrib.auth.decorators import login_required
 
@@ -19,7 +20,7 @@ from makemake.documents.forms import DocumentForm2, VersionForm
 from makemake.documents.models import Document, Version
 from makemake.projects.models import Project
 
-from makemake.core.custom_functions import extract_filename, is_list_empty, separar_valores_sem_espaco, get_status_label, replace_string, is_queryset_empty
+from makemake.core.custom_functions import extract_filename, is_list_empty, separar_valores_sem_espaco, get_status_label, replace_string, is_queryset_empty, create_or_update_object
 from makemake.core.choices import DOCUMENT_STATUS_CHOICES_CODE_FOR_FILES, FILE_EXTENSION
 
 from django.db.models import Max, Count
@@ -81,12 +82,8 @@ def void(request):
 
 def home(request, pk=None):
     instance = Project.objects.get(pk=pk)
-    items = Document.objects.filter(project=instance).order_by( '-docstatus', '-created_at', 'building', 'doctype', 'categories', '-sequential', 'summary')
-    #items = Document.objects.filter(project=instance).order_by( '-docstatus', '-created_at', 'building', 'doctype', 'categories', 'summary')
+    items = Document.objects.filter(project=instance).order_by( '-docstatus', 'building', 'doctype', 'categories', '-created_at', '-sequential', 'summary')
     return render(request, 'documents/home.html', {'items': items, 'instance': instance})
-
-# def is_queryset_empty(queryset):
-#     return not queryset.exists()
 
 def new(request, numproject=None):
     if request.method == 'POST':
@@ -96,59 +93,36 @@ def new(request, numproject=None):
             a = form.cleaned_data['building'].id
             b = form.cleaned_data['categories'].id
             data = {
-                'building': a,
-                'categories': b,
                 'summary': form.cleaned_data['summary'],
                 'description': form.cleaned_data['description'],
                 'created_at': form.cleaned_data['created_at'],
                 'updated_at': form.cleaned_data['updated_at'],
                 'doctype': form.cleaned_data['doctype'],
                 'docstatus': form.cleaned_data['docstatus'],
-                'instance_project': Project.objects.get(id=numproject),
-                'instance_building': Building.objects.get(id=a),
-                'instance_category': Category.objects.get(id=b),
+                'project': Project.objects.get(id=numproject),
+                'building': Building.objects.get(id=a),
+                'categories': Category.objects.get(id=b),
             }
 
             try:
                 query = Document.objects.filter(
                     Q(doctype=data['doctype']) &
                     Q(docstatus=data['docstatus']) &
-                    Q(project=data['instance_project']) &
-                    Q(building=data['instance_building']) &
-                    Q(categories=data['instance_category'])
+                    Q(project=data['project']) &
+                    Q(building=data['building']) &
+                    Q(categories=data['categories'])
                     )
+                
                 # Recuperar o maior valor de released para o conjunto filtrado
                 if is_queryset_empty(query):
                     last = 1
                 else:
                     last = query.aggregate(sequential=Max('sequential'))['sequential'] + 1
+                data['sequential'] = last
 
-                instance = Document(summary=data['summary'],
-                    description=data['description'],
-                    created_at=data['created_at'],
-                    updated_at=data['updated_at'],
-                    doctype=data['doctype'],
-                    docstatus=data['docstatus'],
-                    project=data['instance_project'],
-                    building=data['instance_building'],
-                    categories=data['instance_category'],
-                    sequential=last,
-                    )
-                instance.save()
+                b2 = create_or_update_object(request, Document, data)
             except:
-                # last = 1
-                # instance = Document(summary=data['summary'],
-                #     description=data['description'],
-                #     created_at=data['created_at'],
-                #     updated_at=data['updated_at'],
-                #     doctype=data['doctype'],
-                #     docstatus=data['docstatus'],
-                #     project=data['instance_project'],
-                #     building=data['instance_building'],
-                #     categories=data['instance_category'],
-                #     sequential=last,
-                #     )
-                # instance.save()
+                
                 # OOPS! Some error ocurred 
                 document = Document()
                 context = {'document': document, }
@@ -159,21 +133,25 @@ def new(request, numproject=None):
                 'numproject': numproject}
     return render(request, 'documents/new_or_edit.html', context)
 
+"""
+Document Edit
+"""
 def edit(request, pk=None, numproject=None):
     if pk:
         document = Document.objects.get(pk=pk)
         if request.method == "POST":
             form = DocumentForm2(request.POST, instance=document)
-            #category_formset = DocCategoryFormSet(request.POST, prefix='categories')
             if form.is_valid():
-                a = form.cleaned_data['summary']
-                b = form.cleaned_data['description']
-                c = form.cleaned_data['updated_at']
-                d = form.cleaned_data['doctype']
+                data = {
+                    'summary': form.cleaned_data['summary'],
+                    'description': form.cleaned_data['description'],
+                    'updated_at': form.cleaned_data['updated_at'],
+                    'doctype': form.cleaned_data['doctype'],
+                }
                 
                 # Logica para gravar instância principal
-                b2 = Document.objects.filter(pk=pk)
-                b2.update(summary=a, description=b, updated_at=c, doctype=d, )
+                b2 = create_or_update_object(request, Document, data, pk)
+                
                 items = Building.objects.all().order_by('number')
                 
                 instance = Project.objects.get(pk=numproject)
@@ -184,22 +162,13 @@ def edit(request, pk=None, numproject=None):
                     'instance': instance,
                     }
                 return render(request, 'documents/home.html', context)
-                # return render(request, 'buildings/home.html', {'items': items})
-                # return HttpResponseRedirect('/documents/edit/' + str(pk))
             else:
-                #return render(request, 'documents/edit.html')
                 form.add_error('summary', 'form submission error!')
 
-        queryset = Building.objects.prefetch_related('buildings').filter(buildings__id=numproject)
-        building = ModelChoiceField(queryset)
-
-        context = {'form': DocumentForm2(instance=document, building=building, prefix='edit'),
-                    'pk': pk,
-                    'numproject': numproject}
+        context = {'form': DocumentForm2(instance=document, pk=pk, prefix='edit'),
+                   'numproject': document.project.pk}
         
         return render(request, 'documents/new_or_edit.html', context)
-
-
 
 def details(request, pk):
     context = prepare_details_context(pk)
@@ -226,24 +195,21 @@ def version(request, pk=None):
     document_instance = Document.objects.get(pk=pk)
     if request.method == 'POST':
         form = VersionForm(request.POST, request.FILES, pk=pk)
+
         if form.is_valid():
-            a = form.cleaned_data['released']
-            b = form.cleaned_data['changelog']
-            c = form.cleaned_data['upload_at']
-            d = form.cleaned_data['upload_url']
-            version = Version(released=a,
-                              changelog=b,
-                              upload_at=c,
-                              upload_url=d,
-                              document=document_instance)
-            filename = get_filename(document_instance, a)
-            if filename.upper() == d.name.upper():
-                version = Version.objects.get(Q(document=document_instance) & Q(released=a))
-                version.changelog = b
-                version.upload_at = c
-                version.upload_url = d
-                version.document = document_instance
-                version.save()
+            data = {
+                'released': form.cleaned_data['released'],
+                'changelog': form.cleaned_data['changelog'],
+                'upload_at': form.cleaned_data['upload_at'],
+                'upload_url': form.cleaned_data['upload_url'],
+            }
+
+            filename = get_filename(document_instance, data['released'])
+
+            if filename.upper() == data['upload_url'].name.upper():
+                version_pk = Version.objects.get(Q(document=document_instance) & Q(released=data['released'])).pk
+                b2 = create_or_update_object(request, Version, data, version_pk)
+
                 context = prepare_details_context(document_instance.pk)
                 return render(request, 'documents/details.html', context)
             else:
@@ -251,20 +217,21 @@ def version(request, pk=None):
                 context = {'form': form, 'pk': document_instance, 'filename': filename, 'url': version.upload_url}
                 return render(request, 'documents/version.html', context)
         else:
-            a = form.cleaned_data['released']
-            b = form.cleaned_data['changelog']
-            c = form.cleaned_data['upload_at']
-            filename = get_filename(document_instance, a)
+
+            data = {
+                'released': form.cleaned_data['released'],
+                'changelog': form.cleaned_data['changelog'],
+                'upload_at': form.cleaned_data['upload_at'],
+            }
+            filename = get_filename(document_instance, data['released'])
+
 
             try:
-                d = form.cleaned_data['upload_url']
-                if filename.upper() == d.name.upper():
-                    version = Version.objects.get(Q(document_pk=pk) & Q(released=a))
-                    version.changelog = b
-                    version.upload_at = c
-                    version.upload_url = d
-                    version.document = document_instance
-                    version.save()
+                data['upload_url'] = form.cleaned_data['upload_url']
+
+                if filename.upper() == data['upload_url'].name.upper():
+                    version_pk = Version.objects.get(Q(document__pk=pk) & Q(released=data['released'])).pk
+                    b2 = create_or_update_object(request, Version, data, version_pk)
                     context = prepare_details_context(document_instance.pk)
                     return render(request, 'documents/details.html', context)
                 else:
@@ -276,34 +243,24 @@ def version(request, pk=None):
                         'url': version.upload_url
                         }
                     return render(request, 'documents/version.html', context)
+                
             except (KeyError, FieldError):
-                version = Version.objects.get(Q(document_pk=pk) & Q(released=a))
-                version.changelog = b
-                version.upload_at = c
-                version.document = document_instance
-                version.save()
+                version_pk = Version.objects.get(Q(document__pk=pk) & Q(released=data['released'])).pk
+                b2 = create_or_update_object(request, Version, data, version_pk)
                 context = prepare_details_context(document_instance.pk)
                 return render(request, 'documents/details.html', context)
-
-    query = Version.objects.select_related('document')
     
     # Recuperar o maior valor de released para o conjunto filtrado
-    max_sequential = query.filter(document__pk=pk).aggregate(max_version=Count('released'))['max_version']
-    # query3 = query.filter(Q(document__pk=pk) & 
-    #                       Q(released=max_sequential) & 
-    #                       Q(upload_url__isnull=True)
-    #                       ).exists()
-    query3 = query.filter(Q(document=document_instance) & 
-                          Q(released=max_sequential) & 
-                          Q(upload_url__isnull=False)
-                          ).exists()
+    max_sequential = Version.objects.filter(document__pk=pk).values_list('released', flat=True).order_by('-released').first()
+    query3 = Version.objects.filter(document=document_instance, released=max_sequential, upload_url__isnull=False).exists()
 
-    if query3 or (not query3 and not max_sequential):
+    if not query3 or (not query3 and not max_sequential):
         filename, sequential = adjust_filename3(document_instance, max_sequential, pattern=r'-\w{2}(?=\.\w+$)', nmask='00')
-        Version.objects.create(
-            released=sequential,
-            document=document_instance,
-        )
+        data = {
+            'released': sequential,
+            'document': document_instance,
+        }
+        b2 = create_or_update_object(request, Version, data)
     else:
         context = prepare_details_context(pk)
         context['error'] = 1 # Adiciona Lógica específica para esta view abrir janela JS no template
@@ -317,46 +274,42 @@ def edit_version(request, pk=None):
     version_instance = Version.objects.get(pk=pk)
     document_instance = version_instance.document
     document_pk = version_instance.document.pk
+
     # Recuperar o maior valor de released para o conjunto filtrado
-    #max_released = query.aggregate(max_version=Max('released'))['max_version']
     version = version_instance.released
-    #filename, sequential = adjust_filename2(document_instance, version, pattern=r'-\w{2}(?=\.\w+$)', nmask='00')
     filename = get_filename(document_instance, version, pattern=r'-\w{2}(?=\.\w+$)', nmask='00')
     
     if request.method == 'POST':
         form = VersionForm(request.POST, request.FILES, pk=document_pk)
+
         if form.is_valid():
-            a = form.cleaned_data['released']
-            b = form.cleaned_data['changelog']
-            c = form.cleaned_data['upload_at']
-            d = form.cleaned_data['upload_url']
-            if filename.upper() == d.name.upper():
-                version = Version.objects.get(Q(document_pk=pk) & Q(released=a))
-                version.changelog = b
-                version.upload_at = c
-                version.upload_url = d
-                version.document = document_instance
-                version.save()
+            data = {
+                'released': form.cleaned_data['released'],
+                'changelog': form.cleaned_data['changelog'],
+                'upload_at': form.cleaned_data['upload_at'],
+                'upload_url': form.cleaned_data['upload_url'],
+            }
+
+            if filename.upper() == data['upload_url'].name.upper():
+                version_pk = Version.objects.get(Q(document_pk=pk) & Q(released=data['released'])).pk
+                b2 = create_or_update_object(request, Version, data, version_pk)
                 context = prepare_details_context(version_instance.document.pk)
                 return render(request, 'documents/details.html', context)
-                #return HttpResponseRedirect('/documents/details/' + str(version_instance.document.pk))
             else:
                 form.add_error('upload_url', 'form submission error - invalid filename!')
                 context = {'form': form, 'pk': document_pk, 'filename': filename, 'url': version_instance.upload_url}
-                return render(request, 'documents/version.html', context)
+                return render(request, 'documents/version.html', context)            
         else:
-            if filename.upper() == d.name.upper():
-                a = form.cleaned_data['released']
-                b = form.cleaned_data['changelog']
-                c = form.cleaned_data['upload_at']
-                version = Version.objects.get(Q(document_pk=pk) & Q(released=a))
-                version.changelog = b
-                version.upload_at = c
-                version.document = document_instance
-                version.save()
+            if filename.upper() == data['upload_url'].name.upper():
+                data = {
+                    'released': form.cleaned_data['released'],
+                    'changelog': form.cleaned_data['changelog'],
+                    'upload_at': form.cleaned_data['upload_at'],
+                }
+                version_pk = Version.objects.get(Q(document_pk=pk) & Q(released=data['released'])).pk
+                b2 = create_or_update_object(request, Version, data, version_pk)
                 context = prepare_details_context(version_instance.document.pk)
                 return render(request, 'documents/details.html', context)
-                #return HttpResponseRedirect('/documents/details/' + str(version_instance.document.pk))
             else:
                 form.add_error('upload_url', 'form submission error - invalid filename!')
                 context = {'form': form, 'pk': document_pk, 'filename': filename, 'url': version_instance.upload_url}
@@ -407,28 +360,8 @@ def download_files(request, numproject=None):
 
     # Fecha o arquivo temporário
     temp_file.close()
-
     return response
 
-# @staticmethod    
-# def get_next_doc_number(category,building, doctype, docstatus):
-#     """
-#     Calcula o próximo número sequencial para uma combinação específica.
-#     """
-#     # Buscar o maior número já reservado para a combinação
-#     x =0 
-#     last_number = (
-#         Document.objects.filter(
-#             categories=category,
-#             building=building,
-#             doctype=doctype,
-#             docstatus=docstatus
-#         )
-#         .aggregate(max_number=Max('sequential'))['max_number']
-#     )
-
-#     # Se nenhum número existir, começar com 1; caso contrário, incrementar
-#     return (last_number or 0) + 1
 
 @staticmethod
 def set_filename(document):

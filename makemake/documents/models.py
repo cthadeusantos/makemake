@@ -9,6 +9,8 @@ from makemake.buildings.models import Building
 from makemake.core.custom_functions import left_pad
 from makemake.core.choices import FILE_EXTENSION_CHOICES, DOCUMENT_STATUS_CHOICES
 
+from auditlog.registry import auditlog
+
 class Document(models.Model):
     summary = models.TextField(default='', max_length=100)
     description = models.TextField(default='')
@@ -82,3 +84,12 @@ class Version(models.Model):
                                  blank=True,
                                  null=True)
     objects = models.Manager()
+
+    def __str__(self):
+        if self.upload_url:
+            return f"{self.upload_url}"
+        return f"Empty/{self.released}"
+        
+# Registrar o modelo para auditoria
+auditlog.register(Document)
+auditlog.register(Version)
