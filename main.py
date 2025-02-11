@@ -26,7 +26,7 @@ ALLOWED_HOSTS=*
 
 def setup_django():
     """Configura e inicia o Django."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "seu_projeto.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "makemake.settings")
     django.setup()
 
 def initialize_database():
