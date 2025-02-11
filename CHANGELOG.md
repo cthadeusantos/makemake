@@ -20,6 +20,8 @@
 * global.js added to documents and projects templates
 * Refactoring views and forms at projects and documents
 * document.js updated to accept new buttons and inputs' names
+* Tailwind 2 to Tailwind 3 migration underway
+* Add main.py and change create_tables.sh for trials in https://galaxy-beta.meteor.com/
 
 ## 0.1.2 (2025/01/23)
 * Fixed the case where removing initial items from buildings, users and interested parties caused records not to be added.

@@ -23,4 +23,4 @@ echo "Running migrate"
 python manage.py migrate
 
 echo "Create superuser"
-python manage.py createsuperuser --username admin
+python manage.py createsuperuser --username admin --password admin email="admin@example.com"

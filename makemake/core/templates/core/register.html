@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,11 +10,11 @@
 
     <!-- Tailwind -->
     <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet"> -->
-    <link href="{% static 'js/tailwind.min.css' %}" rel="stylesheet">
+    <link href="{% static 'js/tailwind/tailwind.min.css' %}" rel="stylesheet">
     <!-- Flowbite -->
     <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" /> -->
     <link href="{% static 'js/flowbite.min.css'%}" rel="stylesheet" />
-    <style>
+    <!-- <style>
         @import url('https://fonts.googleapis.com/css?family=Karla:400,700&display=swap');
         .font-family-karla { font-family: karla; }
         .bg-sidebar { background: #3d68ff; }
@@ -23,10 +24,10 @@
         .active-nav-link { background: #1947ee; }
         .nav-item:hover { background: #1947ee; }
         .account-link:hover { background: #3d68ff; }
-    </style>
+    </style> -->
 </head>
 
-<body class="bg-gray-100 font-family-karla flex items-center justify-center min-h-screen">
+<body class="bg-gray-100 font-sans flex items-center justify-center min-h-screen">
     <section class="bg-gray-50 dark:bg-gray-900 w-full">
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
             <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
