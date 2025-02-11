@@ -12,7 +12,6 @@ print(PROJECT_DIR)
 print(ENVIROMENT_DIR)
 print(ENV_FILE)
 print(DB_FILE)
-exit()
 
 def create_env_file():
     """Cria o arquivo .env se não existir."""
